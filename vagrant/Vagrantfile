@@ -1,8 +1,11 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+#WINDOWZ issuez
+#run vagrant cmds from cygwin
 #adds /c/cygdrive to /c/path/to/wherever
 ENV["VAGRANT_DETECTED_OS"] = ENV["VAGRANT_DETECTED_OS"].to_s + " cygwin"
+#run emacs from git shell!
 
 Vagrant.configure(2) do |config|
 
