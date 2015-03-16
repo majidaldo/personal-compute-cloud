@@ -4,38 +4,47 @@
 #WINDOWZ issuez
 #run vagrant cmds from cygwin
 #adds /c/cygdrive to /c/path/to/wherever
-ENV["VAGRANT_DETECTED_OS"] = ENV["VAGRANT_DETECTED_OS"].to_s + " cygwin"
+#ENV["VAGRANT_DETECTED_OS"] = ENV["VAGRANT_DETECTED_OS"].to_s + " cygwin"
 #run emacs from git shell!
+
 
 Vagrant.configure(2) do |config|
 
   #idk if this works
-  if Vagrant.has_plugin?("vagrant-cachier")
-    config.cache.scope = :machine
-    config.cache.synced_folder_opts = {
-      type: :nfs,
-      mount_options: ['rw', 'vers=3', 'tcp', 'nolock']
-    }
-  end
+#  if Vagrant.has_plugin?("vagrant-cachier")
+#    config.cache.scope = :machine
+#    config.cache.synced_folder_opts = {
+#      type: :nfs,
+#      mount_options: ['rw', 'vers=3', 'tcp', 'nolock']
+#    }
+#  end
 
-  
+
+  config.vm.box = "yungsang/coreos"
 
   config.vm.network "private_network", ip: "192.168.12.34"
   config.vm.synced_folder "../../tsad", "/tsad" , type: "rsync"
   #config.vm.synced_folder "../../data", "/data" #maybe
 
-  config.vm.define "files" do |f|
-    f.vm.provider "docker" do |dkr|
-      dkr.build_dir = "../docker/files"
-      dkr.remains_running= false
-    end
-  end
 
-  config.vm.define "db" do |db|
-    db.vm.provider "docker" do |dkr|
-      dkr.build_dir = "../docker/mongodb"
-    end
-  end
+
+  #i don't have win8.1 pro :( eh didnt have gpu  passthru anyways
+  #config.provider "hyperv" do |hv|
+  #  override.vm.box = "devco/coreos-beta" #supports hyperv
+  #end   
+  
+  # config.vm.define "files" do |f|
+  #   f.vm.provider "docker" do |dkr|
+  #     dkr.build_dir = "../docker/files"
+  #     dkr.remains_running= false
+  #   end
+  # end
+
+  # config.vm.define "db" do |db|
+  #   db.vm.provider "docker" do |dkr|
+  #     dkr.build_dir = "../docker/mongodb"
+  #   end
+  # end
 
       
 end
