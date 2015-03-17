@@ -1,23 +1,26 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+#ENV["VAGRANT_DETECTED_OS"] = ENV["VAGRANT_DETECTED_OS"].to_s + " cygwin"
 
 Vagrant.configure(2) do |config|
 
-  idk if this works
+ #idk if this works
  if Vagrant.has_plugin?("vagrant-cachier")
    config.cache.scope = :machine
    config.cache.synced_folder_opts = {
-     type: :nfs,
+     type: "rsync",
      mount_options: ['rw', 'vers=3', 'tcp', 'nolock']
    }
  end
 
-
   config.vm.box = "yungsang/coreos"
 
   config.vm.network "private_network", ip: "192.168.12.34"
+
+  config.vm.synced_folder ".", 'vagrant', disabled: true
   config.vm.synced_folder "../../tsad", "/tsad" , type: "rsync"
+  config.vm.synced_folder "../../tsad-sys", "/tsad-sys" , type: "rsync"
   #config.vm.synced_folder "../../data", "/data" #maybe
 
   
