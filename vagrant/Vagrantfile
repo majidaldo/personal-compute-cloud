@@ -21,7 +21,7 @@ Vagrant.configure(2) do |config|
 
   #run vagrant rsync-auto to sync while working
   config.vm.synced_folder ".", 'vagrant', disabled: true
-  config.vm.synced_folder "../../tsad-proj", "/tsad" , type: "rsync"
+  config.vm.synced_folder "../../../tsad-proj", "/tsad-proj" , type: "rsync"
   #config.vm.synced_folder "../../data", "/data" #maybe
 
   
