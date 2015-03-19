@@ -1,4 +1,9 @@
-~!/bin/sh
+#!/bin/sh
+
+#1. build docker in docker
+# enter the docker ?
+#2. build the docker compose stuff
+
 
 docker build -t mydind dind/
 
