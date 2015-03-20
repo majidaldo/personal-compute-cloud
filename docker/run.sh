@@ -5,8 +5,9 @@
 
 docker run \
        -t -i \
-       --privileged \ 
+       --privileged \
        --volume /tsad-proj:/tsad-proj \
        mydind # my docker in docker
 
-#GPU access pts could go here
+#volume main purpose is for pushing code in from host for dev
+#GPU access pt could go in the run cmd
