@@ -24,5 +24,6 @@ Vagrant.configure(2) do |config|
   config.vm.synced_folder "../../../tsad-proj", "/tsad-proj" , type: "rsync"
   #config.vm.synced_folder "../../data", "/data" #maybe
 
+  #todo: provision system setup
   
 end
