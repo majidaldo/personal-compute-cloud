@@ -3,6 +3,7 @@
 src:
   build: ./src
   volumes: /src
+  command: dev
   
 data:
   build: ./data
@@ -10,6 +11,13 @@ data:
 
 db:
   build: ./mongodb
+  volumes_from:
+    - data
+  expose: 27017
+  links:
+    - data
 
 compute:
   build: ./compute
+  volumes_from:
+    - src
