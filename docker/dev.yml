@@ -1,0 +1,7 @@
+
+
+src:
+  extends:
+    file: common.yml
+    service: src
+  
