@@ -1,6 +1,6 @@
 #!/bin/sh
 
-
+#if first arg is dev, gets it from local folder
 
 SRCSRC=$1
 
