@@ -1,0 +1,15 @@
+
+
+src:
+  build: ./src
+  volumes: /src
+  
+data:
+  build: ./data
+  volumes: /data
+
+db:
+  build: ./mongodb
+
+compute:
+  build: ./compute
