@@ -2,7 +2,8 @@
 
 
 #this is for interactive/dev use?
-
+## To detach the tty without exiting the shell,
+# use the escape sequence Ctrl-p + Ctrl-q
 docker run \
        -t -i \
        --privileged \
