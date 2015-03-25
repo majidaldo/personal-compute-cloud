@@ -17,7 +17,13 @@ db:
   links:
     - data
 
+computecore:
+  build: ./compute_core
+
+    
 compute:
   build: ./compute
+  links:
+    - computecore 
   volumes_from:
     - src
