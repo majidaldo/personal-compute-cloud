@@ -1,0 +1,9 @@
+#DEVELOPMENT-SPECIFIC ENV VARS
+
+#These are going into Vagrantfile, hence the quotes
+
+#run vagrant rsync-auto to sync while working
+SYNC_FOLDER_TYPE="rsync"
+SYNC_FOLDER_SRC="../../../tsad-proj"
+SYNC_FOLDER_DST="/tsad-proj"
+
