@@ -1,0 +1,8 @@
+#!/bin/sh
+
+#wrapper script around the vagrant exe
+
+./compose_env.sh > envs
+source envs
+
+exec vagrant ${1+"$@"}
