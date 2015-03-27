@@ -16,6 +16,11 @@ IMAGES_FOLDER="c:/Users/Majid/Documents/GitHub/tsad-proj/tsad-sys/vagrant/images
 BOXES_FOLDER="$IMAGES_FOLDER/vagrant"
 
 #my boxes
+#to make this box:
+#1. in a dir: vagrant init yungsang/coreos
+#2. vagrant up
+#3. logged in once then logged out (not sure if it helps)
+#4. vagrant repackage yungsang/coreos virtualbox 1.3.8
 COREOS_URL="file://$BOXES_FOLDER/yungsang_coreos_virtualbox_138.box"
 
 #in the vagrantfile
