@@ -2,7 +2,6 @@
 
 #wrapper script around the vagrant exe
 
-./compose_env.sh > envs
-source envs
+source ./get_envs
 
 exec vagrant ${1+"$@"}
