@@ -1,9 +1,27 @@
 #DEVELOPMENT-SPECIFIC ENV VARS
 
-#These are going into Vagrantfile, hence the quotes
-
+#SOURCE
+#These are going into Vagrantfile, 
 #run vagrant rsync-auto to sync while working
+#should only be src code
 SYNC_FOLDER_TYPE="rsync"
-SYNC_FOLDER_SRC="../../../tsad-proj"
-SYNC_FOLDER_DST="/tsad-proj"
+SYNC_FOLDER_HST="../../../tsad-proj"
+SYNC_FOLDER_GST="/tsad-proj"
+
+
+#BINARIES
+#not source code
+IMAGES_FOLDER="c:/Users/Majid/Documents/GitHub/tsad-proj/tsad-sys/vagrant/images"
+#Vagrant
+BOXES_FOLDER="$IMAGES_FOLDER/vagrant"
+
+#my boxes
+COREOS_URL="file://$BOXES_FOLDER/yungsang_coreos_virtualbox_138.box"
+
+#in the vagrantfile
+DOCKER_BOX="COREOS"
+DOCKER_URL=$(eval "echo \$"$DOCKER_BOX"_URL")
+
+
+
 

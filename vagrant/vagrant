@@ -2,6 +2,8 @@
 
 #wrapper script around the vagrant exe
 
-source ./get_envs
+./get_envs
+eval export $(cat ./envs.state)
 
-exec vagrant ${1+"$@"}
+
+vagrant ${1+"$@"}
