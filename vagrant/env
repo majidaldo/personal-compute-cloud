@@ -4,16 +4,19 @@
 #These are going into Vagrantfile, 
 #run vagrant rsync-auto to sync while working
 #should only be src code
-SYNC_FOLDER_TYPE="rsync"
-SYNC_FOLDER_HST="../../../tsad-proj"
-SYNC_FOLDER_GST="/tsad-proj"
+SRC_DIR_TYPE="rsync"
+SRC_DIR_HST="../../../tsad-proj"
+SRC_DIR_GST="/tsad-proj"
 
 
-#BINARIES
-#not source code
-IMAGES_FOLDER="c:/Users/Majid/Documents/GitHub/tsad-proj/tsad-sys/vagrant/images"
+#BINARIES (NOT SRC!)
+#i put this folder outside of src bc rsync wasn't (actually) excluding it
+#on my computer for some reason
+BIGFILES_DIR="../../..//tsad-bigfiles"
+
+IMAGES_DIR="$BIGFILES_DIR/images"
 #Vagrant
-BOXES_FOLDER="$IMAGES_FOLDER/vagrant"
+BOXES_DIR="$IMAGES_DIR/vagrant"
 
 #my boxes
 #to make this box:
@@ -21,12 +24,18 @@ BOXES_FOLDER="$IMAGES_FOLDER/vagrant"
 #2. vagrant up
 #3. logged in once then logged out (not sure if it helps)
 #4. vagrant repackage yungsang/coreos virtualbox 1.3.8
-COREOS_URL="file://$BOXES_FOLDER/yungsang_coreos_virtualbox_138.box"
+COREOS_URL="file://$BOXES_DIR/yungsang_coreos_virtualbox_138.box"
 
 #in the vagrantfile
+DOCKER_BOX_ADD="192.168.123.111"
 DOCKER_BOX="COREOS"
 DOCKER_URL=$(eval "echo \$"$DOCKER_BOX"_URL")
 
-
+#Dockerregistry images
+#created by: docker pull registry
+#then: docker save > /path/to/image
+REGISTRY_ADD="192.168.123.222"
+REGISTRY_DIR="$IMAGES_DIR/docker-registry/"
+#REGISTRY_IMG="$REGISTRY_DIR/registry.tar"
 
 
