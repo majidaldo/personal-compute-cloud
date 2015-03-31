@@ -3,7 +3,17 @@
 #wrapper script around the vagrant exe
 
 ./get_envs
-eval export $(cat ./envs.state)
+
+while read env; do
+    eval export $env
+done < ./envs.state
+while read env; do
+    eval export $env
+done < ./envs.state
+
+#note to self: this does not work (fully)
+#eval export $(cat ./envs.state)
+
 
 
 vagrant ${1+"$@"}
