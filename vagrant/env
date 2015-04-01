@@ -25,15 +25,21 @@ BOXES_DIR="$IMAGES_DIR/vagrant"
 #3. logged in once then logged out (not sure if it helps)
 #4. vagrant repackage yungsang/coreos virtualbox 1.3.8
 COREOS_URL="file://$BOXES_DIR/yungsang_coreos_virtualbox_138.box"
+BOOT2DOCKER_URL="file://$BOXES_DIR/boot2docker-virtualbox.box"
 
 #in the vagrantfile
 DOCKER_BOX_ADD="192.168.123.111"
+#DOCKER_BOX="COREOS"
 DOCKER_BOX="COREOS"
 DOCKER_URL=$(eval "echo \$"$DOCKER_BOX"_URL")
 
+REGISTRY_BOX="BOOT2DOCKER"
+REGISTRY_URL=$(eval "echo \$"$REGISTRY_BOX"_URL")
+
+
 #Dockerregistry images
 #created by: docker pull registry
-#then: docker save > /path/to/image
+#then: docker save registry > /path/to/image
 REGISTRY_ADD="192.168.123.222"
 REGISTRY_DIR="$IMAGES_DIR/docker-registry/"
 #REGISTRY_IMG="$REGISTRY_DIR/registry.tar"

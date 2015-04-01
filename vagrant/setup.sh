@@ -17,6 +17,7 @@ then
     mv ./setup.sh ./dontrunsetup.sh
     #...when running this script from a vagrantfile
     ./vagrant box add --force --name $DOCKER_BOX $DOCKER_URL
+    ./vagrant box add --force --name $REGISTRY_BOX $REGISTRY_URL
     mv ./dontrunsetup.sh ./setup.sh
     if [ $? -ne 0 ] #err on above line
     then
