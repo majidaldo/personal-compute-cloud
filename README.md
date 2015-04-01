@@ -9,4 +9,3 @@ action files:
 
 todo:
 * tag images with tsad for mgt
-* add .system to top http://superuser.com/questions/701735/run-script-on-host-machine-during-vagrant-up
