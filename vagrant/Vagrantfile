@@ -2,20 +2,6 @@
 # vi: set ft=ruby :
 system("sh ./setup.sh")
 
-$regscript=<<SCRIPT
-
-docker load --input /registry/ubuntu.tar &&   \
-docker load --input /registry/registry.tar && \
-
-docker run \
--d \
--e SETTINGS_FLAVOR=dev \
--e STORAGE_PATH=/registry \
--p 5000:5000 \
-registry
-
-SCRIPT
-
 
 
 ENV["VAGRANT_DETECTED_OS"] = ENV["VAGRANT_DETECTED_OS"].to_s + " cygwin"
@@ -52,7 +38,17 @@ Vagrant.configure(2) do |config|
     dkrrg.vm.network "private_network", ip: ENV["REGISTRY_ADD"]
     dkrrg.vm.synced_folder ".", 'vagrant', disabled: true
     dkrrg.vm.synced_folder ENV["REGISTRY_DIR"], "/registry"
-    dkrrg.vm.provision "shell" , inline: $regscript
+    dkrrg.vm.provision "loadimgs", type:  "shell" do |s|
+      s.inline= 'docker load --input /registry/ubuntu.tar  
+                 docker load --input /registry/registry.tar  '
+    end
+    dkrrg.vm.provision "docker" do |d|
+      d.run "registry",
+            daemonize: true,
+            args: "-e SETTINGS_FLAVOR=dev \
+                   -e STORAGE_PATH=/registry \
+                   -p 5000:5000"
+    end
   end
 
   #machine that runs my dockers
