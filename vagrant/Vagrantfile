@@ -19,12 +19,20 @@ Vagrant.configure(2) do |config|
   
 
   # common stuff in the boxes
-
   
   config.vm.provider "virtualbox" do |v|
-    v.memory = 2048
+    v.memory = 1024
   end
 
+  config.vm.provision "busybox", type: "shell" do |s|
+    s.inline="\
+    curl \
+      http://www.busybox.net/downloads/binaries/latest/busybox-x86_64 \
+        > busybox
+    sudo chmod +x busybox
+    " 
+  end
+  
   config.vm.synced_folder ".", 'vagrant', disabled: true
   config.vm.synced_folder ENV["SRC_DIR_HST"], ENV["SRC_DIR_GST"] \
                           , type: ENV["SRC_DIR_TYPE"] \
@@ -32,8 +40,12 @@ Vagrant.configure(2) do |config|
   #config.vm.synced_folder "../../data", "/data" #maybe
 
 
-  #machine that runs the registry comes on first
-  config.vm.define "dockerreg" do |dkrrg|
+  #machine that runs the docker registry comes on first
+  config.vm.define "reg" do |dkrrg|
+    dkrrg.vm.provider "virtualbox" do |v|
+      v.memory = 1024
+    end
+    
     dkrrg.vm.box = ENV["REGISTRY_BOX"]
     dkrrg.vm.network "private_network", ip: ENV["REGISTRY_ADD"]
     dkrrg.vm.synced_folder ".", 'vagrant', disabled: true
@@ -42,24 +54,55 @@ Vagrant.configure(2) do |config|
       s.inline= 'docker load --input /registry/ubuntu.tar  
                  docker load --input /registry/registry.tar  '
     end
-    dkrrg.vm.provision "docker" do |d|
+    dkrrg.vm.provision "registry", type: "docker" do |d|
       d.run "registry",
             daemonize: true,
             args: "-e SETTINGS_FLAVOR=dev \
                    -e STORAGE_PATH=/registry \
                    -p 5000:5000"
-    end
+    end 
+  #  dkrrg.vm.provision "vpn", type: "docker" do |d|
+    #    d.build_image ENV["
+    #end
   end
 
   #machine that runs my dockers
   config.vm.define "dockers" do |dkrbx|
+    #echo 'DOCKER_OPTS="$DOCKER_OPTS --insecure-registry myregistry:5000"' |\
+    #     sudo tee --append /etc/default/docker
+
+    #should rename dockerbox to coreos and put this provisioning under
+    #config.for the os itself
     dkrbx.vm.box = ENV["DOCKER_BOX"]
+
+    
+    dkrbx.vm.provision "insecurereg", type: "shell" do |s|
+    #echo 'DOCKER_OPTS="$DOCKER_OPTS --insecure-registry myregistry:5000"' |\
+    #     sudo tee --append /etc/default/docker
+
+    #should rename dockerbox to coreos and put this provisioning under
+    #config.for the os itself
+
+      s.inline = <<MARKER
+      sudo mkdir -p /etc/systemd/system/docker.service.d/
+      sudo rm /etc/systemd/system/docker.service.d/50-insecure-registry.conf
+      echo -e "\n[Service]" | \
+      sudo tee --append \
+      /etc/systemd/system/docker.service.d/50-insecure-registry.conf
+      echo ExecStart= | \
+      sudo tee --append \
+      /etc/systemd/system/docker.service.d/50-insecure-registry.conf
+      echo ExecStart=/usr/bin/docker  -d \
+         --insecure-registry 192.168.123.111:5000 | \
+        sudo tee  \
+        --append  /etc/systemd/system/docker.service.d/50-insecure-registry.conf
+      echo -e "\n" | sudo tee --append \
+      /etc/systemd/system/docker.service.d/50-insecure-registry.conf
+MARKER
+    end
     dkrbx.vm.network "private_network", ip: ENV["DOCKER_BOX_ADD"]
   end
 
-
-
-  #todo: provision system setup
  
   
 end
