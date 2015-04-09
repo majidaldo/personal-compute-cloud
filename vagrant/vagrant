@@ -7,9 +7,7 @@
 while read env; do
     eval export $env
 done < ./envs.state
-while read env; do
-    eval export $env
-done < ./envs.state
+
 
 #note to self: this does not work (fully)
 #eval export $(cat ./envs.state)
