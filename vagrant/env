@@ -1,9 +1,0 @@
-#DEVELOPMENT-SPECIFIC ENV VARS
-
-
-
-SRC_DIR_TYPE="rsync"
-SRC_DIR_HST="../../../tsad-proj"
-SRC_DIR_GST="/tsad-proj"
-
-
