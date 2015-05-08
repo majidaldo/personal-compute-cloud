@@ -4,6 +4,7 @@
 
 *.state
 /.vagrant
+.vagrant
 /private
 *.private
 #generated files
