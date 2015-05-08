@@ -1,0 +1,245 @@
+#cloud-config
+
+
+write_files:
+
+  - path: /home/core/sys.env
+    permissions: 666
+    content: |
+      VPN_SUBNET==
+      WEAVE_SUBNET==
+      REGISTRY_HOST==
+
+  - path: /etc/profile.d/sys_env.sh
+    permissions: 755
+    content: |
+      #!/bin/sh
+      while read env; do
+          eval export $env
+      done <  /home/core/sys.env
+      
+  
+  - path: /etc/systemd/system/docker.service.d/50-insecure-registry.conf
+    content: |
+      [Service]
+      Environment='DOCKER_OPTS=\
+      --insecure-registry=10.1.0.0/16 \
+      --insecure-registry=${REGISTRY_HOST} \
+      --registry-mirror=http://${REGISTRY_HOST}'
+  
+
+  - path: /home/core/waitforfile.sh
+    permissions: 755
+    content: |
+      #!/bin/sh
+      #bc systemd sucks!
+      cd ~
+      #gets the file name as an argument
+      while [ ! -f $1 ]
+      do
+         sleep .1
+      done
+        
+coreos:
+  fleet:
+    public-ip: $public_ipv4
+    metadata: "loc=local , role=init"
+  units:
+
+    - name: docker.service
+      command: start
+    - name: etcd2.service
+      command: start
+    - name: fleet.service
+      command: start
+    - name: docker-tcp.socket
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=Docker Socket for the API
+        After=weavedns.service
+        Requires=weavedns.service
+        
+        [Socket]
+        ListenStream=2375
+        Service=docker.service
+        BindIPv6Only=both
+        
+        [Install]
+        WantedBy=sockets.target
+
+    - name: 10-weave.network
+      runtime: false
+      content: |
+        [Match]
+        Type=bridge
+        Name=weave*
+
+        [Network]
+    - name: install-weave.service
+      command: stop
+      enable: true
+      content: |
+        [Unit]
+        Description=Install Weave
+        Documentation=http://zettio.github.io/weave/
+        Requires=network-online.target docker.service stuffregistry.service
+        After=   network-online.target docker.service stuffregistry.service
+
+        
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStartPre=/bin/mkdir -p /opt/bin/
+        ExecStartPre=/usr/bin/curl \
+        --silent \
+        --location \
+        https://github.com/weaveworks/weave/releases/download/latest_release/weave \
+        --output /opt/bin/weave
+        ExecStartPre=/usr/bin/chmod +x /opt/bin/weave
+        ExecStartPre=/usr/bin/docker pull zettio/weave:latest
+        ExecStartPre=/usr/bin/docker pull zettio/weavetools:latest
+        ExecStartPre=/usr/bin/docker pull zettio/weavedns:latest
+        ExecStartPre=/usr/bin/docker pull weaveworks/weaveexec:latest
+        ExecStart=/bin/echo Weave Installed
+    - name: weave.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        After=install-weave.service
+        Description=Weave Network
+        Documentation=http://zettio.github.io/weave/
+        Requires=install-weave.service
+        
+        [Service]
+        ExecStartPre=/opt/bin/weave launch 
+        ExecStart=/usr/bin/docker logs -f weave
+        SuccessExitStatus=2
+        ExecStop=/opt/bin/weave stop
+    - name: weavedns.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=Weave dns Network
+        Documentation=http://zettio.github.io/weave/
+        Requires=stuffregistry.service 
+        After=   stuffregistry.service 
+        
+        [Service]
+        EnvironmentFile=/home/core/sys.env
+        ExecStartPre=/opt/bin/weave launch-dns ${WEAVE_SUBNET}
+        ExecStart=/usr/bin/docker logs -f weavedns
+        SuccessExitStatus=2
+        ExecStop=/opt/bin/weave stop
+    - name: stuffregistry.service
+      command: stop
+      runtime: true
+      enable: true
+      content: |
+        [Unit]
+        After=registry.service
+        Requires=registry.service
+        Description=stuff registry with useful images
+            
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStartPre=/tsad-proj/tsad-sys/docker/sstuffregistry.sh
+        ExecStart=/bin/echo 'bootstrapped registry'
+        
+    - name: fileshare.service
+      command: stop
+      enable: true
+      content: |
+        [Unit]
+        Description= nfs share for my project files
+        Requires=stuffregistry.service
+        After=   stuffregistry.service
+        
+        [Service]
+        EnvironmentFile=/home/core/sys.env
+        ExecStartPre=/usr/bin/docker pull cpuguy83/nfs-server
+        ExecStartPre=-/usr/bin/docker rm nfs-server
+        ExecStartPre=/opt/bin/weave run \
+        192.168.254.1/24 \
+        -h fileshare.weave.local \
+        --name nfs-server \
+        --privileged \
+        --rm \
+        -v /tsad-proj:/tsad-proj \
+        cpuguy83/nfs-server /tsad-proj
+        ExecStart=/usr/bin/docker logs -f nfs-server
+        ExecStop= /usr/bin/docker stop    nfs-server
+
+       
+        
+    - name: projectfiles.service
+      command: start
+      content: |
+        [Unit]
+        Description=gets project files
+        Requires=network-online.target 
+        After=   network-online.target 
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        EnvironmentFile=/home/core/sys.env
+        ExecStartPre=-/usr/bin/mkdir /tsad-proj
+        ExecStart=/usr/bin/mount -v -o \
+        'rw,relatime,vers=3,rsize=32768,wsize=4096,namlen=255,hard,nolock,proto=udp,timeo=11,retrans=3,sec=sys,mountvers=3,mountport=1058,mountproto=udp,local_lock=all' \
+        ${NFS_SERVER}:/C/Users/Majid/Documents/GitHub/tsad-proj /tsad-proj
+        ExecStop=/usr/bin/umount /tsad-proj
+
+
+    - name: loadregimg.service
+      command: start
+      runtime: false
+      content: |
+        [Unit]
+        Description=loads docker registry image
+        After=projectfiles.service docker.service
+        Requires=projectfiles.service docker.service
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStartPre=/home/core/waitforfile.sh \
+        /tsad-proj/tsad-bigfiles/images/docker/bootstrap/registry.tar
+        ExecStart=/usr/bin/docker load --input \
+        /tsad-proj/tsad-bigfiles/images/docker/bootstrap/registry.tar
+        
+
+        
+    - name: registry.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=pvt docker registry
+        After=   docker.service projectfiles.service loadregimg.service
+        Requires=docker.service projectfiles.service loadregimg.service
+
+        [Service]
+        User=core
+        TimeoutStartSec=0
+        KillMode=none
+        ExecStartPre=-/usr/bin/docker kill registry
+        ExecStartPre=-/usr/bin/docker rm -f registry
+        ExecStartPre=/usr/bin/docker images
+        ExecStartPre=/usr/bin/docker run \
+        --name registry \
+        --rm \
+        -v /tsad-proj/tsad-bigfiles/images/docker/registry:/registry \
+        -e STORAGE_PATH=/registry \
+        -e SETTINGS_FLAVOR=dev \
+        -e MIRROR_SOURCE=https://registry-1.docker.io \
+        -e MIRROR_SOURCE_INDEX=https://index.docker.io \
+        -p 80:5000 \
+        registry
+        ExecStart=/usr/bin/logs -f registry
+        ExecStop=/usr/bin/docker stop registry
+        

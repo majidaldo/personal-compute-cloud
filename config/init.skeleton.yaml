@@ -1,0 +1,29 @@
+#cloud-config
+
+hostname: $CHOSTNAME
+
+coreos:
+  fleet:
+    metadata: loc=local , role=init
+    public-ip: $public_ipv4
+  units:
+  - name: docker.service
+  - name: etcd2.service
+  - name: fleet.service
+  - name: docker-tcp.socket
+  - name: 10-weave.network
+  - name: install-weave.service
+  - name: weave.service
+  - name: weavedns.service
+  - name: stuffregistry.service
+  - name: fileshare.service
+  - name: projectfiles.service
+  - name: loadregimg.service
+  - name: registry.service
+
+write_files:
+- path: /home/core/sys.env
+- path: /etc/profile.d/sys_env.sh
+- path: /etc/systemd/system/docker.service.d/50-insecure-registry.conf
+- path: /home/core/waitforfile.sh
+
