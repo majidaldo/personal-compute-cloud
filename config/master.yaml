@@ -147,7 +147,7 @@ coreos:
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStartPre=/tsad-proj/tsad-sys/docker/sstuffregistry.sh
+        ExecStartPre=/tsad-proj/tsad-sys/docker/build.sh
         ExecStart=/bin/echo 'bootstrapped registry'
         
     - name: fileshare.service
