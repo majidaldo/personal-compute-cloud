@@ -5,4 +5,6 @@
 *.state
 /.vagrant
 /private
-
+*.private
+#generated files
+user-data.yaml
