@@ -20,7 +20,7 @@ if File.exists?(CLOUD_CONFIG_PATH) && (ARGV[0].eql?('provision') )
  end
 
  yaml = YAML.dump(data)
- File.open('user-data', 'w') { |file| file.write("#cloud-config\n\n#{yaml}") }
+ File.open(CLOUD_CONFIG_PATH, 'w') { |file| file.write("#cloud-config\n\n#{yaml}") }
 
 end
 
