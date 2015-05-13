@@ -84,8 +84,8 @@ coreos:
         [Unit]
         Description=Install Weave
         Documentation=http://zettio.github.io/weave/
-        Requires=network-online.target docker.service stuffregistry.service
-        After=   network-online.target docker.service stuffregistry.service
+        Requires=network-online.target docker.service 
+        After=   network-online.target docker.service
 
         
         [Service]
@@ -168,7 +168,7 @@ coreos:
         -h fileshare.weave.local \
         --name nfs-server \
         --privileged \
-        --rm \
+        -d \
         -v /tsad-proj:/tsad-proj \
         cpuguy83/nfs-server /tsad-proj
         ExecStart=/usr/bin/docker logs -f nfs-server
@@ -197,7 +197,6 @@ coreos:
 
     - name: loadregimg.service
       command: start
-      runtime: false
       content: |
         [Unit]
         Description=loads docker registry image
@@ -213,10 +212,8 @@ coreos:
         /tsad-proj/tsad-bigfiles/images/docker/bootstrap/registry.tar
         
 
-        
     - name: registry.service
       command: start
-      enable: true
       content: |
         [Unit]
         Description=pvt docker registry
@@ -229,10 +226,9 @@ coreos:
         KillMode=none
         ExecStartPre=-/usr/bin/docker kill registry
         ExecStartPre=-/usr/bin/docker rm -f registry
-        ExecStartPre=/usr/bin/docker images
         ExecStartPre=/usr/bin/docker run \
         --name registry \
-        --rm \
+        -d \
         -v /tsad-proj/tsad-bigfiles/images/docker/registry:/registry \
         -e STORAGE_PATH=/registry \
         -e SETTINGS_FLAVOR=dev \
@@ -240,6 +236,6 @@ coreos:
         -e MIRROR_SOURCE_INDEX=https://index.docker.io \
         -p 80:5000 \
         registry
-        ExecStart=/usr/bin/logs -f registry
+        ExecStart=/usr/bin/docker logs -f registry
         ExecStop=/usr/bin/docker stop registry
         

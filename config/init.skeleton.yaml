@@ -7,21 +7,52 @@ coreos:
     metadata: loc=local , role=init
     public-ip: $public_ipv4
   units:
-  - name: docker.service
   - name: etcd2.service
   - name: fleet.service
-  - name: docker-tcp.socket
+  - name: projectfiles.service
+  - name: varlibdocker.service
+    command: start
+    content: |
+      [Unit]
+      After=projectfiles.service
+      Requires=projectfiles.service
+      Before=docker.service
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStartPre=-/tsad-proj/tsad-sys/docker/create_varlibdocker.sh
+      ExecStart=/usr/bin/mountpoint -q /home/core/vld
+  - name: var-lib-docker.mount
+    command: start
+    content: |
+      [Unit]
+      Description=Mount to /var/lib/docker
+      Requires=varlibdocker.service
+      After=varlibdocker.service
+      Before=docker.service
+      [Mount]
+      #mounting /dev/varlibdocker does not work!!!!
+      What=/home/core/vld
+      Where=/var/lib/docker
+      Options=bind
+  - name: docker.service
+  - name: loadregimg.service
+  - name: registry.service
   - name: 10-weave.network
   - name: install-weave.service
   - name: weave.service
   - name: weavedns.service
+  - name: docker-tcp.socket
   - name: stuffregistry.service
   - name: fileshare.service
-  - name: projectfiles.service
-  - name: loadregimg.service
-  - name: registry.service
-
+    
 write_files:
+- path: /etc/modules-load.d/loop.conf
+  content: |
+    loop
+- path: /etc/modprobe.d/eightloop.conf
+  content: |
+    options loop max_loop=64
 - path: /home/core/sys.env
 - path: /etc/profile.d/sys_env.sh
 - path: /etc/systemd/system/docker.service.d/50-insecure-registry.conf
