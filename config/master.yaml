@@ -147,6 +147,7 @@ coreos:
         [Service]
         Type=oneshot
         RemainAfterExit=yes
+        EnvironmentFile=/home/core/sys.env
         ExecStartPre=/tsad-proj/tsad-sys/docker/build.sh
         ExecStart=/bin/echo 'bootstrapped registry'
         
