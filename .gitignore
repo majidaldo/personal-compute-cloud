@@ -2,6 +2,7 @@
 *~
 
 
+*.log
 *.state
 /.vagrant
 .vagrant
