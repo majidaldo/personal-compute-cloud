@@ -16,6 +16,7 @@ git checkout master $(cat files.txt)
 #cp -rf $(cat files.txt) ../ansible
 #only files that don't exist. -u doesn't do the job
 yes n | cp -r $(cat files.txt) ../ansible
+rm -rf $(find ../ansible -name .git)
 
 #clean up
 cd ..
