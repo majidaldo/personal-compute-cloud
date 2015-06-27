@@ -1,0 +1,10 @@
+---
+
+
+
+dependencies:
+  - role: vagrant
+  - role: vagrantboxmaker
+    in_vagrantfile: "{{vagrant_dir}}/{{box}}/Vagrantfile"
+    out_boxfile: "{{box_dir}}/{{box}}"
+

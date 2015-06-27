@@ -1,0 +1,9 @@
+---
+
+vagrant_dir: "{{sys_dir}}/providers/vagrant"
+
+vagrant_env:
+  SRC_DIR_HST: "../../../../" # "{{project_dir}}" not working on cygwin
+  SRC_DIR_GST: "/mntfromsvr"
+  CLOUD_CONFIG_FN: "user-data.yaml"
+  

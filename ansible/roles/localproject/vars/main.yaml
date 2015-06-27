@@ -1,0 +1,4 @@
+project_dir: "{{playbook_dir}}/../../"
+sys_dir: "{{project_dir}}/tsad-sys"
+bigfiles_dir: "{{project_dir}}/tsad-bigfiles"
+
