@@ -1,0 +1,12 @@
+---
+# tasks file for cloudconfigwriter
+
+- name: generate configuration
+  local_action: shell ./cconfig.sh {{cconfig}}
+                chdir="{{cc_dir}}"
+  register: cc
+
+- name: write configuration to file
+  copy:
+    content: "{{cc.stdout}}"
+    dest: "{{out_cconfig_pth}}"

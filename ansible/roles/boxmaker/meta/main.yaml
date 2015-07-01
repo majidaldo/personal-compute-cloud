@@ -5,6 +5,7 @@
 dependencies:
   - role: vagrant
   - role: vagrantboxmaker
-    in_vagrantfile: "{{vagrant_dir}}/{{box}}/Vagrantfile"
+    in_vagrantfile: "{{vagrant_dir}}/{{box}}/{{vagrantfile_name}}"
     out_boxfile: "{{box_dir}}/{{box}}"
+  
 

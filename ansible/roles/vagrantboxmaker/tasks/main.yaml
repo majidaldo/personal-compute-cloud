@@ -40,7 +40,7 @@
 #- block:
 
 - name: temporary box file name
-  shell: echo $(dirname in_vagrantfile)/some.box
+  shell: echo $(dirname {{in_vagrantfile}})/some.box
   register: tempbox
   when: shouldrun
 - name: remove temporary box # todo: best if error handler

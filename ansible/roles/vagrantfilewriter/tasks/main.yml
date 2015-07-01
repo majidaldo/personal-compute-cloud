@@ -1,0 +1,10 @@
+---
+# tasks file for vagrantfilewriter
+
+
+- name: make vagrantfile
+  template:
+    src: "{{in_template_pth}}"
+    dest: "{{out_vagrantfile_pth}}"
+    backup: false
+    

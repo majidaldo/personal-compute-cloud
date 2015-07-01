@@ -1,8 +1,9 @@
 ---
 
 - hosts: localhost
-#  gather_facts: false
-#  environment: vagrant_env
+  gather_facts: false
+  environment:
+    adf: 333
   vars:
     regularvar: abc
     env:
@@ -10,11 +11,14 @@
 
 
   roles:
-    - role: coreosvagrant
-      coreos_box: init
+    - role: cloudconfigwriter
+      
 
 
   tasks:
     - name: echoooo
       shell: echo ${adf}
       
+
+
+

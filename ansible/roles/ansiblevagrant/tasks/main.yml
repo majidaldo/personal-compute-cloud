@@ -1,0 +1,25 @@
+---
+# tasks file for ansiblevagrant
+
+- name: convert box pth to windowz pth
+  shell: cygpath -w {{box_dir}}/{{box_name}}
+  register: bxpth
+  when: false==(ansible_env.OS.lower().find('windows') != -1)
+#why this overwrites bxpth????
+# - name: dont convert box pth to windowz pth
+#   shell: echo {{box_dir}}/{{box_name}}
+#   register: bxpth
+#   when: true==(ansible_env.OS.lower().find('windows') != -1)
+
+
+- name: make a vagrant box that ansible knows about
+  vagrant:
+    command: up
+    box_name: "{{box_name}}"
+    vm_name:  "{{box_name}}"
+    box_path: "{{bxpth.stdout}}"
+    log: "{{logging}}"
+
+    
+    #chk env for where the .vagrant is since this is in a rol
+#  so maybe the probl is that it's a local file

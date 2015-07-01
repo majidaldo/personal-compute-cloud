@@ -1,0 +1,4 @@
+---
+# vars file for cloudconfigwriter
+
+cc_dir: "{{sys_dir}}/config/coreos/"
