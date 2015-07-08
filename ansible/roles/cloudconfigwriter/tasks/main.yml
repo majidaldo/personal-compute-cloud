@@ -1,12 +1,25 @@
 ---
 # tasks file for cloudconfigwriter
 
+
+ #this is just to put it in the lookup
+- set_fact: cconfig_pth={{cc_dir}}/{{cconfig}}.tmp
+
+- name: stub tmp local file
+  local_action: shell touch {{cconfig_pth}}
+  changed_when: false
+- name: stub dst remote file
+  shell: touch {{out_cconfig_pth}}
+  changed_when: false
+
+
 - name: generate configuration
-  local_action: shell ./cconfig.sh {{cconfig}}
+  local_action: shell ./cconfig.sh {{cconfig}} > {{cconfig_pth}}
                 chdir="{{cc_dir}}"
-  register: cc
+  changed_when: " \"{{  lookup('file', cconfig_pth )|hash('md5')  }}\" != \"{{ lookup('file',out_cconfig_pth)|hash('md5')  }}\" "
+                                              
 
 - name: write configuration to file
   copy:
-    content: "{{cc.stdout}}"
+    src: "{{cconfig_pth}}"
     dest: "{{out_cconfig_pth}}"
