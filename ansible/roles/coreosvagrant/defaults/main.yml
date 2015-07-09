@@ -1,2 +1,5 @@
 ---
 # defaults file for coreosvagrant
+
+vm_name: coreos
+

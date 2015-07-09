@@ -1,0 +1,17 @@
+---
+# tasks file for ansiblevagrant
+
+
+- name: make a vagrant box that ansible knows about
+  vagrant:
+    command: "{{command}}"
+    box_name: "{{box_name}}"
+    vm_name:  "{{vm_name}}"
+#    box_path: "{{bxpth.stdout}}"
+    log: "{{log}}"
+    config_code: "{{config_code}}"
+    vagrant_root: "{{playbook_dir}}"
+    count: "{{count}}"
+    forward_ports: #[] doesn't work!
+  register: vagrant
+

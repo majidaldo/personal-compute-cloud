@@ -1,0 +1,292 @@
+#cloud-config
+
+coreos:
+  fleet:
+    metadata: loc=local , role=init
+    public-ip: $public_ipv4
+  units:
+  - command: start
+    name: etcd2.service
+  - command: start
+    name: fleet.service
+  - command: start
+    content: "[Unit]\nDescription=gets project files\nRequires=network-online.target\
+      \ \nAfter=   network-online.target \n\n[Service]\nType=oneshot\nRemainAfterExit=yes\n\
+      EnvironmentFile=/home/core/sys.env\nExecStartPre=-/usr/bin/mkdir /tsad-proj\n\
+      ExecStart=/usr/bin/mount -v -o \\\n'rw,relatime,vers=3,rsize=32768,wsize=4096,namlen=255,hard,nolock,proto=udp,timeo=11,retrans=3,sec=sys,mountvers=3,mountport=1058,mountproto=udp,local_lock=all'\
+      \ \\\n192.168.179.1:/tsad-proj /tsad-proj\nExecStop=/usr/bin/umount /tsad-proj\n"
+    name: projectfiles.service
+  - command: start
+    content: '[Unit]
+
+      After=projectfiles.service
+
+      Requires=projectfiles.service
+
+      Before=docker.service
+
+      [Service]
+
+      Type=oneshot
+
+      RemainAfterExit=yes
+
+      ExecStartPre=-/tsad-proj/tsad-sys/docker/create_varlibdocker.sh
+
+      ExecStart=/usr/bin/mountpoint -q /home/core/vld
+
+      '
+    name: varlibdocker.service
+  - command: start
+    content: '[Unit]
+
+      Description=Mount to /var/lib/docker
+
+      Requires=varlibdocker.service
+
+      After=varlibdocker.service
+
+      Before=docker.service
+
+      [Mount]
+
+      #mounting /dev/varlibdocker does not work!!!!
+
+      What=/home/core/vld
+
+      Where=/var/lib/docker
+
+      Options=bind
+
+      '
+    name: var-lib-docker.mount
+  - command: start
+    name: docker.service
+  - command: start
+    content: '[Unit]
+
+      Description=loads docker registry image
+
+      After=projectfiles.service docker.service
+
+      Requires=projectfiles.service docker.service
+
+
+      [Service]
+
+      Type=oneshot
+
+      RemainAfterExit=yes
+
+      ExecStartPre=/home/core/waitforfile.sh \
+
+      /tsad-proj/tsad-bigfiles/images/docker/bootstrap/registry.tar
+
+      ExecStart=/usr/bin/docker load --input \
+
+      /tsad-proj/tsad-bigfiles/images/docker/bootstrap/registry.tar
+
+      '
+    name: loadregimg.service
+  - command: start
+    content: '[Unit]
+
+      Description=pvt docker registry
+
+      After=   docker.service projectfiles.service loadregimg.service
+
+      Requires=docker.service projectfiles.service loadregimg.service
+
+
+      [Service]
+
+      User=core
+
+      TimeoutStartSec=0
+
+      KillMode=none
+
+      ExecStartPre=-/usr/bin/docker kill registry
+
+      ExecStartPre=-/usr/bin/docker rm -f registry
+
+      ExecStartPre=/usr/bin/docker run \
+
+      --name registry \
+
+      -d \
+
+      -v /tsad-proj/tsad-bigfiles/images/docker/registry:/registry \
+
+      -e STORAGE_PATH=/registry \
+
+      -e SETTINGS_FLAVOR=dev \
+
+      -e MIRROR_SOURCE=https://registry-1.docker.io \
+
+      -e MIRROR_SOURCE_INDEX=https://index.docker.io \
+
+      -p 80:5000 \
+
+      registry
+
+      ExecStart=/usr/bin/docker logs -f registry
+
+      ExecStop=/usr/bin/docker stop registry
+
+      '
+    name: registry.service
+  - content: '[Match]
+
+      Type=bridge
+
+      Name=weave*
+
+
+      [Network]
+
+      '
+    name: 10-weave.network
+    runtime: false
+  - command: stop
+    content: "[Unit]\nDescription=Install Weave\nDocumentation=http://zettio.github.io/weave/\n\
+      Requires=network-online.target docker.service \nAfter=   network-online.target\
+      \ docker.service\n\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\nExecStartPre=/bin/mkdir\
+      \ -p /opt/bin/\nExecStartPre=/usr/bin/curl \\\n--silent \\\n--location \\\n\
+      https://github.com/weaveworks/weave/releases/download/latest_release/weave \\\
+      \n--output /opt/bin/weave\nExecStartPre=/usr/bin/chmod +x /opt/bin/weave\nExecStartPre=/usr/bin/docker\
+      \ pull zettio/weave:latest\nExecStartPre=/usr/bin/docker pull zettio/weavetools:latest\n\
+      ExecStartPre=/usr/bin/docker pull zettio/weavedns:latest\nExecStartPre=/usr/bin/docker\
+      \ pull weaveworks/weaveexec:latest\nExecStart=/bin/echo Weave Installed\n"
+    enable: true
+    name: install-weave.service
+  - command: start
+    content: "[Unit]\nAfter=install-weave.service\nDescription=Weave Network\nDocumentation=http://zettio.github.io/weave/\n\
+      Requires=install-weave.service\n\n[Service]\nExecStartPre=/opt/bin/weave launch\
+      \ \nExecStart=/usr/bin/docker logs -f weave\nSuccessExitStatus=2\nExecStop=/opt/bin/weave\
+      \ stop\n"
+    enable: true
+    name: weave.service
+  - command: start
+    content: "[Unit]\nDescription=Weave dns Network\nDocumentation=http://zettio.github.io/weave/\n\
+      Requires=stuffregistry.service \nAfter=   stuffregistry.service \n\n[Service]\n\
+      EnvironmentFile=/home/core/sys.env\nExecStartPre=/opt/bin/weave launch-dns 192.168.1.1/24\n\
+      ExecStart=/usr/bin/docker logs -f weavedns\nSuccessExitStatus=2\nExecStop=/opt/bin/weave\
+      \ stop\n"
+    enable: true
+    name: weavedns.service
+  - command: start
+    content: '[Unit]
+
+      Description=Docker Socket for the API
+
+      After=weavedns.service
+
+      Requires=weavedns.service
+
+
+      [Socket]
+
+      ListenStream=2375
+
+      Service=docker.service
+
+      BindIPv6Only=both
+
+
+      [Install]
+
+      WantedBy=sockets.target
+
+      '
+    enable: true
+    name: docker-tcp.socket
+  - command: stop
+    content: "[Unit]\nAfter=registry.service\nRequires=registry.service\nDescription=stuff\
+      \ registry with useful images\n    \n[Service]\nType=oneshot\nRemainAfterExit=yes\n\
+      EnvironmentFile=/home/core/sys.env\nExecStartPre=/tsad-proj/tsad-sys/docker/build.sh\n\
+      ExecStart=/bin/echo 'bootstrapped registry'\n"
+    enable: true
+    name: stuffregistry.service
+    runtime: true
+  - command: stop
+    content: '[Unit]
+
+      Description= nfs share for my project files
+
+      Requires=stuffregistry.service
+
+      After=   stuffregistry.service
+
+
+      [Service]
+
+      EnvironmentFile=/home/core/sys.env
+
+      ExecStartPre=/usr/bin/docker pull cpuguy83/nfs-server
+
+      ExecStartPre=-/usr/bin/docker rm nfs-server
+
+      ExecStartPre=/opt/bin/weave run \
+
+      192.168.254.1/24 \
+
+      -h fileshare.weave.local \
+
+      --name nfs-server \
+
+      --privileged \
+
+      -d \
+
+      -v /tsad-proj:/tsad-proj \
+
+      cpuguy83/nfs-server /tsad-proj
+
+      ExecStart=/usr/bin/docker logs -f nfs-server
+
+      ExecStop= /usr/bin/docker stop    nfs-server
+
+      '
+    enable: true
+    name: fileshare.service
+hostname: init
+write_files:
+- content: 'loop
+
+    '
+  path: /etc/modules-load.d/loop.conf
+- content: 'options loop max_loop=64
+
+    '
+  path: /etc/modprobe.d/eightloop.conf
+- content: 'VPN_SUBNET=10.1.1.1/24
+
+    WEAVE_SUBNET=192.168.1.1/24
+
+    REGISTRY_HOST=init.local:80
+
+    LKJ=SSS
+
+    '
+  path: /home/core/sys.env
+  permissions: 666
+- content: "#!/bin/sh\nwhile read env; do\n    eval export $env\ndone <  /home/core/sys.env\n"
+  path: /etc/profile.d/sys_env.sh
+  permissions: 755
+- content: '[Service]
+
+    Environment=''DOCKER_OPTS=\
+
+    --insecure-registry=10.1.0.0/16 \
+
+    --insecure-registry=init.local:80 \
+
+    --registry-mirror=http://init.local:80''
+
+    '
+  path: /etc/systemd/system/docker.service.d/50-insecure-registry.conf
+- content: "#!/bin/sh\n#bc systemd sucks!\ncd ~\n#gets the file name as an argument\n\
+    while [ ! -f $1 ]\ndo\n   sleep .1\ndone\n  \n"
+  path: /home/core/waitforfile.sh
+  permissions: 755

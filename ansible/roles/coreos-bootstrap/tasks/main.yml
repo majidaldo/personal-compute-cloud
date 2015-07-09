@@ -1,0 +1,46 @@
+- name: Check if bootstrap is needed
+  raw: stat $HOME/.bootstrapped
+  register: need_bootstrap
+  ignore_errors: True
+
+- name: Run bootstrap.sh
+  script: bootstrap.sh
+  when: need_bootstrap | failed
+
+- name: Check if we need to install pip
+  shell: "{{ansible_python_interpreter}} -m pip --version"
+  register: need_pip
+  ignore_errors: True
+  changed_when: false
+  when: need_bootstrap | failed
+
+#should be copy but for some reason not working with ansible 1.9
+- name: Copy get-pip.py
+  template: src={{role_path}}/files/get-pip.py dest=~/get-pip.py
+  when: need_pip | failed
+  environment:
+    ansible_python_interpreter: "{{ansible_python_interpreter}}"
+    
+
+- name: Install pip
+  shell: "{{ansible_python_interpreter}} ~/get-pip.py"
+  when: need_pip | failed
+
+- name: Remove get-pip.py
+  file: path=~/get-pip.py state=absent
+  when: need_pip | failed
+
+- name: Install pip launcher
+  template: src={{role_path}}/files/runner dest=~/bin/pip mode=0755
+  when: need_pip | failed
+
+# Deploy cloudconfig and run coreos-cloudinit
+
+
+- name: Install cloudconfig #just here in case of templating
+  template: src={{cconfig}} dest=/home/core/user_data
+  tags: cc
+
+- name: Run coreos-cloudinit
+  raw: sudo coreos-cloudinit --from-file=/home/core/user_data
+  tags: cc

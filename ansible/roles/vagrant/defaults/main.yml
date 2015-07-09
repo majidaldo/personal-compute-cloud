@@ -1,0 +1,19 @@
+---
+# defaults file for ansiblevagrant
+
+log: "true"
+box_name: ubuntu/vivid64
+command: up
+vagrant_root: "{{playbook_dir}}"
+
+
+memory: 1024
+
+config_code: |
+  config.vm.provider "virtualbox" do |vb|
+      vb.memory = {{memory}}
+  end
+
+
+count: 1
+vm_name: ansiblevagrant

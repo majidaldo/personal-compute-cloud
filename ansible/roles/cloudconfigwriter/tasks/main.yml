@@ -4,6 +4,7 @@
 
  #this is just to put it in the lookup
 - set_fact: cconfig_pth={{cc_dir}}/{{cconfig}}.tmp
+- set_fact: out_cconfig_pth={{write_cconfig_pth}} #'arg in'
 
 - name: stub tmp local file
   local_action: shell touch {{cconfig_pth}}

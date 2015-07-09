@@ -1,27 +1,13 @@
 ---
 
 dependencies:
+ 
+    
   - role: vagrant
     
-  - role: cloudconfigwriter
-    cconfig: "{{coreos_box}}"
-    out_cconfig_pth: "{{vagrant_dir}}/{{coreos_box}}/user-data.yaml"
     
-  - role: vagrantfilewriter
-    out_vagrantfile_pth: "{{vagrant_dir}}/{{coreos_box}}/{{vagrantfile_name}}"
-    in_template_pth: "{{coreos_box}}.j2"
-    CLOUD_CONFIG_FN: "\"user-data.yaml\""
-    #SRC_DIR_HST: "\"..\..\..\..\ \""
-    #SRC_DIR_GST: "\"/mntfromsvr\""
-      
-  - role: boxmaker
-    box: "{{coreos_box}}"
-    
-  - role: ansiblevagrant
-    box_name: "{{coreos_box}}"
-    vagrant_root: "{{playbook_dir}}"
-   
-   
+
+  
     
      
     

@@ -383,7 +383,6 @@ class VagrantWrapper(object):
             d['vagrant_name'] = "%s" % (vm_name.replace("-","_"))
         d['internal_ip'] = VAGRANT_INT_IP % (255-N)
         d['forward_ports'] = []
-        d['config_code'] = self.config_code
         self.vg_data['num_inst'] = N
         
         inst_array.append(d)
@@ -453,7 +452,7 @@ class VagrantWrapper(object):
                         if p:
                             vfile.write(VAGRANT_FILE_PORT_FORWARD_LINE % (name,p,(int(p)+10000)) )
                 config_code=""
-                for aline in d['config_code'].splitlines():
+                for aline in self.config_code.splitlines():
                     if aline.lstrip()[0] != ';':
                         config_code+='\n    '
                         if 'config.' in aline:

@@ -1,0 +1,7 @@
+---
+
+dependencies:
+  
+  - role: coreosvagrant
+#    memory: "{{memory2}}"
+#    vm_name: "{{vm_name2}}"
