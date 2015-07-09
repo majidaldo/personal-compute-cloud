@@ -8,8 +8,8 @@ git clone --recursive git@github.com:majidaldo/ansible-vagrant.git ansible-temp
 
 #get files
 cd ansible-temp
-git checkout template 
-git checkout master $(cat files.txt) 
+git checkout template
+git checkout master $(cat files.txt)
 
 #copy over
 #force overwrite
