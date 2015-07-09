@@ -12,7 +12,7 @@ start=0
     #!
 if [  ! -d "$vldf" ];
 then
-    mkdir $vldf
+    mkdir -p $vldf
     atfs=${RANDOM}.tmp
     #1GB
     #put it in local then cpy
@@ -79,15 +79,15 @@ else
     #chk again
     if mountpoint -q /home/core/vld
     then
-	echo idk that worked
+    echo idk that worked
     else
-	echo more drastic measures
-	#do i really need to loop thru devs here
-	for afs in $(ls -1 ${vldf}/*.fs ); do
-	    sudo btrfs check --repair $afs
-	done
-	assign_dev
-	sudo mount -v /dev/varlibdocker /home/core/vld
+    echo more drastic measures
+    #do i really need to loop thru devs here
+    for afs in $(ls -1 ${vldf}/*.fs ); do
+        sudo btrfs check --repair $afs
+    done
+    assign_dev
+    sudo mount -v /dev/varlibdocker /home/core/vld
     fi
 fi
 
