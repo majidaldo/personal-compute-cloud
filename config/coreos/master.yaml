@@ -1,3 +1,5 @@
+---
+
 #cloud-config
 
 
@@ -9,6 +11,7 @@ write_files:
       VPN_SUBNET==
       WEAVE_SUBNET==
       REGISTRY_HOST==
+      LKJ=SSS
 
   - path: /etc/profile.d/sys_env.sh
     permissions: 755
@@ -192,7 +195,7 @@ coreos:
         ExecStartPre=-/usr/bin/mkdir /tsad-proj
         ExecStart=/usr/bin/mount -v -o \
         'rw,relatime,vers=3,rsize=32768,wsize=4096,namlen=255,hard,nolock,proto=udp,timeo=11,retrans=3,sec=sys,mountvers=3,mountport=1058,mountproto=udp,local_lock=all' \
-        ${NFS_SERVER}:/C/Users/Majid/Documents/GitHub/tsad-proj /tsad-proj
+        ${NFS_SERVER}:/tsad-proj /tsad-proj
         ExecStop=/usr/bin/umount /tsad-proj
 
 

@@ -1,6 +1,9 @@
+---
+
 #cloud-config
 
 hostname: $CHOSTNAME
+
 
 coreos:
   fleet:
