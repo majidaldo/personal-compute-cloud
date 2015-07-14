@@ -111,9 +111,9 @@ coreos:
       enable: true
       content: |
         [Unit]
-        After=install-weave.service
         Description=Weave Network
         Documentation=http://zettio.github.io/weave/
+        After=install-weave.service
         Requires=install-weave.service
         
         [Service]
@@ -128,15 +128,31 @@ coreos:
         [Unit]
         Description=Weave dns Network
         Documentation=http://zettio.github.io/weave/
-        Requires=stuffregistry.service 
-        After=   stuffregistry.service 
+        Requires=weave.service 
+        After=   weave.service 
         
         [Service]
         EnvironmentFile=/home/core/sys.env
-        ExecStartPre=/opt/bin/weave launch-dns ${WEAVE_SUBNET}
+        ExecStartPre=/opt/bin/weave launch-dns 
         ExecStart=/usr/bin/docker logs -f weavedns
         SuccessExitStatus=2
-        ExecStop=/opt/bin/weave stop
+        ExecStop=/opt/bin/weave stop-dns
+    - name: weaveproxy.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=Weave proxy
+        Documentation=http://zettio.github.io/weave/
+        Requires=weavedns.service 
+        After=   weavedns.service 
+        
+        [Service]
+        EnvironmentFile=/home/core/sys.env
+        ExecStartPre=/opt/bin/weave launch-proxy
+        ExecStart=/usr/bin/docker logs -f weaveproxy
+        SuccessExitStatus=2
+        ExecStop=/opt/bin/weave stop-proxy
     - name: stuffregistry.service
       command: stop
       runtime: true
