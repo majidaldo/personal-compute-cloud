@@ -1,0 +1,18 @@
+---
+- hosts: "{{hosts}}"
+  gather_facts: true
+  tasks:
+    - add_host: groups=ssh_config_hosts
+                name={{inventory_hostname}}
+                #name=ansible_ssh_host ?
+                #name=ansible_hostname ?
+- hosts: localhost
+  roles:
+    - role: ssh_config
+      ssh_config_hosts: "{{groups.ssh_config_hosts}}"
+#      ssh_config_hosts: [list,of,hosts]
+    
+
+        
+        
+    
