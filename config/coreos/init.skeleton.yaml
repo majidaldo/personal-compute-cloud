@@ -45,6 +45,7 @@ coreos:
   - name: install-weave.service
   - name: weave.service
   - name: weavedns.service
+  - name: weaveproxy.service
   - name: docker-tcp.socket
   - name: stuffregistry.service
   - name: fileshare.service
