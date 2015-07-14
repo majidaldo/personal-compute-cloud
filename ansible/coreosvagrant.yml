@@ -43,6 +43,12 @@
   roles:
     - role: coreos-bootstrap
       cconfig: "{{hostvars['localhost']['vagrant_machine']}}"
+
+- hosts: localhost
+  gather_facts: true
+  roles:
+    - role: ssh_config
+      ssh_config_hosts: "{{groups.vagrant_hosts}}"
     
 
 
