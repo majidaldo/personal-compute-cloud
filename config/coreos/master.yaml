@@ -154,8 +154,7 @@ coreos:
         SuccessExitStatus=2
         ExecStop=/opt/bin/weave stop-proxy
     - name: stuffregistry.service
-      command: stop
-      runtime: true
+      command: start
       enable: true
       content: |
         [Unit]
@@ -171,26 +170,23 @@ coreos:
         ExecStart=/bin/echo 'bootstrapped registry'
         
     - name: fileshare.service
-      command: stop
+      command: start
       enable: true
       content: |
         [Unit]
         Description= nfs share for my project files
-        Requires=stuffregistry.service
-        After=   stuffregistry.service
+        Requires=weaveproxy.service
+        After=   weaveproxy.service
         
         [Service]
         EnvironmentFile=/home/core/sys.env
-        ExecStartPre=/usr/bin/docker pull cpuguy83/nfs-server
         ExecStartPre=-/usr/bin/docker rm nfs-server
-        ExecStartPre=/opt/bin/weave run \
-        192.168.254.1/24 \
-        -h fileshare.weave.local \
+        ExecStartPre=/usr/bin/docker run \
         --name nfs-server \
         --privileged \
         -d \
         -v /tsad-proj:/tsad-proj \
-        cpuguy83/nfs-server /tsad-proj
+        nfs-server /tsad-proj
         ExecStart=/usr/bin/docker logs -f nfs-server
         ExecStop= /usr/bin/docker stop    nfs-server
 
@@ -198,6 +194,7 @@ coreos:
         
     - name: projectfiles.service
       command: start
+      enable: true
       content: |
         [Unit]
         Description=gets project files
@@ -217,6 +214,7 @@ coreos:
 
     - name: loadregimg.service
       command: start
+      enable: true
       content: |
         [Unit]
         Description=loads docker registry image
@@ -234,6 +232,7 @@ coreos:
 
     - name: registry.service
       command: start
+      enable: true
       content: |
         [Unit]
         Description=pvt docker registry
