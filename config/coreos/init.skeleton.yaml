@@ -39,15 +39,18 @@ coreos:
       Where=/var/lib/docker
       Options=bind
   - name: docker.service
-  - name: loadregimg.service
-  - name: registry.service
+  - name: docker-tcp.socket
   - name: 10-weave.network
+  - name: loadregimg.service
   - name: install-weave.service
   - name: weave.service
   - name: weavedns.service
   - name: weaveproxy.service
-  - name: docker-tcp.socket
   - name: stuffregistry.service
+#    content: |
+#      [Service]
+#      ExecStart=/usr/bin/echo stub
+  - name: registry.service
   - name: fileshare.service
     
 write_files:
