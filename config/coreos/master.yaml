@@ -20,6 +20,8 @@ write_files:
       while read env; do
           eval export $env
       done <  /home/core/sys.env
+      #docker env
+      eval $(weave proxy-env)
       
   
   - path: /etc/systemd/system/docker.service.d/50-insecure-registry.conf
@@ -150,6 +152,7 @@ coreos:
         [Service]
         EnvironmentFile=/home/core/sys.env
         ExecStartPre=/opt/bin/weave launch-proxy
+        ExecStartPre=/etc/profile.d/sys_env.sh
         ExecStart=/usr/bin/docker logs -f weaveproxy
         SuccessExitStatus=2
         ExecStop=/opt/bin/weave stop-proxy
