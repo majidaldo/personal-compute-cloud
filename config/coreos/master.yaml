@@ -172,27 +172,6 @@ coreos:
         ExecStartPre=/tsad-proj/tsad-sys/docker/build.sh
         ExecStart=/bin/echo 'bootstrapped registry'
         
-    - name: fileshare.service
-      command: start
-      enable: true
-      content: |
-        [Unit]
-        Description= nfs share for my project files
-        Requires=weaveproxy.service
-        After=   weaveproxy.service
-        
-        [Service]
-        EnvironmentFile=/home/core/sys.env
-        ExecStartPre=-/usr/bin/docker rm nfs-server
-        ExecStartPre=/usr/bin/docker run \
-        --name nfs-server \
-        --privileged \
-        -d \
-        -v /tsad-proj:/tsad-proj \
-        nfs-server /tsad-proj
-        ExecStart=/usr/bin/docker logs -f nfs-server
-        ExecStop= /usr/bin/docker stop    nfs-server
-
        
         
     - name: projectfiles.service
@@ -233,22 +212,45 @@ coreos:
         /tsad-proj/tsad-bigfiles/images/docker/bootstrap/registry.tar
         
 
+    - name: fileshare.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description= nfs share for my project files
+        Requires=registry.service
+        After=   registry.service
+        
+        [Service]
+        EnvironmentFile=/home/core/sys.env
+        ExecStartPre=/etc/profile.d/sys_env.sh
+        ExecStartPre=-/usr/bin/docker rm nfs-server
+        ExecStartPre=/opt/bin/weave run \
+        --name nfs-server \
+        --privileged \
+        -d \
+        -v /tsad-proj:/tsad-proj \
+        nfs-server /tsad-proj
+        ExecStart=/usr/bin/docker logs -f nfs-server
+        ExecStop= /usr/bin/docker stop    nfs-server
+
+       
     - name: registry.service
       command: start
       enable: true
       content: |
         [Unit]
         Description=pvt docker registry
-        After=   docker.service projectfiles.service loadregimg.service
-        Requires=docker.service projectfiles.service loadregimg.service
+        After=   docker.service projectfiles.service loadregimg.service weaveproxy.service
+        Requires=docker.service projectfiles.service loadregimg.service weaveproxy.service
 
         [Service]
-        User=core
         TimeoutStartSec=0
         KillMode=none
+        ExecStartPre=/etc/profile.d/sys_env.sh
         ExecStartPre=-/usr/bin/docker kill registry
         ExecStartPre=-/usr/bin/docker rm -f registry
-        ExecStartPre=/usr/bin/docker run \
+        ExecStartPre=/opt/bin/weave run \
         --name registry \
         -d \
         -v /tsad-proj/tsad-bigfiles/images/docker/registry:/registry \
@@ -260,4 +262,4 @@ coreos:
         registry
         ExecStart=/usr/bin/docker logs -f registry
         ExecStop=/usr/bin/docker stop registry
-        
+
