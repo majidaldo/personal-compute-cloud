@@ -7,11 +7,13 @@ command: up
 vagrant_root: "{{playbook_dir}}"
 
 
+cpus: 1
 memory: 1024
 
 config_code: |
   config.vm.provider "virtualbox" do |vb|
       vb.memory = {{memory}}
+      vb.cpus = {{cpus}}
   end
 
 
