@@ -8,8 +8,6 @@ write_files:
   - path: /home/core/sys.env
     permissions: 666
     content: |
-      VPN_SUBNET==
-      WEAVE_SUBNET==
       REGISTRY_HOST==
       
 
@@ -27,8 +25,9 @@ write_files:
   - path: /etc/systemd/system/docker.service.d/50-insecure-registry.conf
     content: |
       [Service]
+      EnvironmentFile=/home/core/sys.env
       Environment='DOCKER_OPTS=\
-      --insecure-registry=10.1.0.0/16 \
+      --insecure-registry=10.128.0.0/16 \
       --insecure-registry=${REGISTRY_HOST} \
       --registry-mirror=http://${REGISTRY_HOST}'
   
@@ -119,7 +118,7 @@ coreos:
         Requires=install-weave.service
         
         [Service]
-        ExecStartPre=/opt/bin/weave launch 
+        ExecStartPre=/opt/bin/weave launch -iprange 10.128.0.0/24 -ipsubnet 10.128.0.0/25
         ExecStart=/usr/bin/docker logs -f weave
         SuccessExitStatus=2
         ExecStop=/opt/bin/weave stop
@@ -211,29 +210,6 @@ coreos:
         ExecStart=/usr/bin/docker load --input \
         /tsad-proj/tsad-bigfiles/images/docker/bootstrap/registry.tar
         
-
-    - name: fileshare.service
-      command: start
-      enable: true
-      content: |
-        [Unit]
-        Description= nfs share for my project files
-        Requires=registry.service
-        After=   registry.service
-        
-        [Service]
-        EnvironmentFile=/home/core/sys.env
-        ExecStartPre=/etc/profile.d/sys_env.sh
-        ExecStartPre=-/usr/bin/docker rm nfs-server
-        ExecStartPre=/opt/bin/weave run \
-        --name nfs-server \
-        --privileged \
-        -d \
-        -v /tsad-proj:/tsad-proj \
-        nfs-server /tsad-proj
-        ExecStart=/usr/bin/docker logs -f nfs-server
-        ExecStop= /usr/bin/docker stop    nfs-server
-
        
     - name: registry.service
       command: start
@@ -250,7 +226,7 @@ coreos:
         ExecStartPre=/etc/profile.d/sys_env.sh
         ExecStartPre=-/usr/bin/docker kill registry
         ExecStartPre=-/usr/bin/docker rm -f registry
-        ExecStartPre=/opt/bin/weave run \
+        ExecStartPre=/opt/bin/weave run ${REGISTRY_WNET} \
         --name registry \
         -d \
         -v /tsad-proj/tsad-bigfiles/images/docker/registry:/registry \
@@ -263,3 +239,27 @@ coreos:
         ExecStart=/usr/bin/docker logs -f registry
         ExecStop=/usr/bin/docker stop registry
 
+
+        
+    - name: fileshare.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description= nfs share for my project files
+        Requires=registry.service
+        After=   registry.service
+        
+        [Service]
+        EnvironmentFile=/home/core/sys.env
+        ExecStartPre=/etc/profile.d/sys_env.sh
+        ExecStartPre=-/usr/bin/docker rm nfs-server
+        ExecStartPre=/opt/bin/weave run ${FILESHARE_WNET} \
+        --name nfs-server \
+        --privileged \
+        -d \
+        -v /tsad-proj:/tsad-proj \
+        nfs-server /tsad-proj
+        ExecStart=/usr/bin/docker logs -f nfs-server
+        ExecStop= /usr/bin/docker stop    nfs-server
+        
