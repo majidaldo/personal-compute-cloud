@@ -6,12 +6,22 @@ hostname: $CHOSTNAME
 
 
 coreos:
+  
   fleet:
     metadata: loc=local , role=init
-    public-ip: $public_ipv4
+    public-ip: "{{public_ip}}"
+  etcd2:
+    discovery: ${DISCOVERY_URL}
+    advertise-client-urls: http://{{public_ip}}:2379
+    initial-advertise-peer-urls: http://{{public_ip}}:2380
+    # listen on both the official ports and the legacy ports
+    # legacy ports can be omitted if your application doesn't depend on them
+    listen-client-urls: http://0.0.0.0:2379
+    listen-peer-urls: http://{{public_ip}}:2380  
+
   units:
-  - name: etcd2.service
   - name: fleet.service
+  - name: etcd2.service
   - name: projectfiles.service
   - name: varlibdocker.service
     command: start
@@ -47,9 +57,9 @@ coreos:
   - name: weavedns.service
   - name: weaveproxy.service
   - name: stuffregistry.service
-#    content: |
-#      [Service]
-#      ExecStart=/usr/bin/echo stub
+    content: |
+      [Service]
+      ExecStart=/usr/bin/echo stub
   - name: registry.service
   - name: fileshare.service
     

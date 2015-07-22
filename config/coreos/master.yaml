@@ -43,11 +43,24 @@ write_files:
       do
          sleep .1
       done
-        
+
+      
 coreos:
+  
   fleet:
-    public-ip: $public_ipv4
-    metadata: "loc=local , role=init"
+    public-ip: $public_ip
+#    metadata: "loc=local , role=init"
+
+  etcd2:
+    discovery: ${DISCOVERY_URL}
+    advertise-client-urls: http://$public_ip:2379
+    initial-advertise-peer-urls: http://$public_ip:2380
+    # listen on both the official ports and the legacy ports
+    # legacy ports can be omitted if your application doesn't depend on them
+    listen-client-urls: http://0.0.0.0:2379
+    listen-peer-urls: http://$public_ip:2380
+
+
   units:
 
     - name: docker.service
@@ -155,6 +168,37 @@ coreos:
         ExecStart=/usr/bin/docker logs -f weaveproxy
         SuccessExitStatus=2
         ExecStop=/opt/bin/weave stop-proxy
+        
+    - name: weaveconnect.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=expose weave svcs
+        After=   weaveproxy.service
+        Requires=weaveproxy.service
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/opt/bin/weave connect 
+
+        
+    - name: weaveexpose.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=expose weave svcs
+        After=   weaveconnect.service
+        Requires=weaveadd.service
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/opt/bin/weave expose
+
+      
     - name: stuffregistry.service
       command: start
       enable: true
