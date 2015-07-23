@@ -1,0 +1,7 @@
+---
+
+
+vm_name: compute-local
+memory: 1024
+cpus: 4
+
