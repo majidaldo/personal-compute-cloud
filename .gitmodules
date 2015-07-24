@@ -1,3 +1,6 @@
 [submodule "cloudconfig-writer"]
 	path = cloudconfig-writer
 	url = https://github.com/majidaldo/cloudconfig-writer.git
+[submodule "ansible/roles/ssh_config"]
+	path = ansible/roles/ssh_config
+	url = https://github.com/majidaldo/ansible-role-ssh-config.git
