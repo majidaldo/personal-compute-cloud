@@ -18,11 +18,11 @@ write_files:
       while read env; do
           eval export $env
       done <  /home/core/sys.env
-      #docker env
+      #docker env . theres a 'export' here. eval $(export ...)
       eval $(weave proxy-env)
       
   
-  - path: /etc/systemd/system/docker.service.d/50-insecure-registry.conf
+  - path: /etc/systemd/system/docker.service.d/50-insecure-registry-mirr.conf
     content: |
       [Service]
       EnvironmentFile=/home/core/sys.env
@@ -31,7 +31,15 @@ write_files:
       --insecure-registry=${REGISTRY_HOST} \
       --registry-mirror=http://${REGISTRY_HOST}'
   
-
+  - path: /etc/systemd/system/docker.service.d/50-insecure-registry.conf
+    content: |
+      [Service]
+      EnvironmentFile=/home/core/sys.env
+      Environment='DOCKER_OPTS=\
+      --insecure-registry=10.128.0.0/16 \
+      --insecure-registry=${REGISTRY_HOST}'
+      
+      
   - path: /home/core/waitforfile.sh
     permissions: 755
     content: |
@@ -55,8 +63,6 @@ coreos:
     discovery: ${DISCOVERY_URL}
     advertise-client-urls: http://$public_ip:2379
     initial-advertise-peer-urls: http://$public_ip:2380
-    # listen on both the official ports and the legacy ports
-    # legacy ports can be omitted if your application doesn't depend on them
     listen-client-urls: http://0.0.0.0:2379
     listen-peer-urls: http://$public_ip:2380
 
@@ -115,10 +121,14 @@ coreos:
         https://github.com/weaveworks/weave/releases/download/latest_release/weave \
         --output /opt/bin/weave
         ExecStartPre=/usr/bin/chmod +x /opt/bin/weave
-        ExecStartPre=/usr/bin/docker pull zettio/weave:latest
-        ExecStartPre=/usr/bin/docker pull zettio/weavetools:latest
-        ExecStartPre=/usr/bin/docker pull zettio/weavedns:latest
-        ExecStartPre=/usr/bin/docker pull weaveworks/weaveexec:latest
+        ExecStartPre=/usr/bin/docker pull registry.hub.docker.com/zettio/weave:latest
+        ExecStartPre=/usr/bin/docker pull registry.hub.docker.com/zettio/weavetools:latest
+        ExecStartPre=/usr/bin/docker pull registry.hub.docker.com/zettio/weavedns:latest
+        ExecStartPre=/usr/bin/docker pull registry.hub.docker.com/weaveworks/weaveexec:latest
+        Execstartpre=/usr/bin/docker tag -f registry.hub.docker.com/zettio/weave:latest zettio/weave:latest
+        ExecStartPre=/usr/bin/docker tag -f registry.hub.docker.com/zettio/weavetools:latest zettio/weavetools:latest
+        ExecStartPre=/usr/bin/docker tag -f registry.hub.docker.com/zettio/weavedns:latest zettio/weavedns:latest
+        ExecStartPre=/usr/bin/docker tag -f registry.hub.docker.com/weaveworks/weaveexec:latest weaveworks/weaveexec:latest
         ExecStart=/bin/echo Weave Installed
     - name: weave.service
       command: start
@@ -191,7 +201,7 @@ coreos:
         [Unit]
         Description=expose weave svcs
         After=   weaveconnect.service
-        Requires=weaveadd.service
+        Requires=weaveconnect.service
 
         [Service]
         Type=oneshot

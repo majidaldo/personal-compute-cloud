@@ -1,0 +1,45 @@
+---
+
+- hosts: localhost
+  gather_facts: false
+
+  pre_tasks:
+    
+    - name: chk if init machine is up
+      shell: ping -n 1 init
+      register: pinit
+      failed_when:  "'could not find host' in pinit.stdout"
+      changed_when: "'could not find host' in pinit.stdout" 
+      ignore_errors: true
+      
+    - name: get a new discovery url if init not up
+      shell: |
+        echo -n "DISCOVERY_URL=" > discovery.url.tmp && \
+        curl -w "\n" 'https://discovery.etcd.io/new?size=1' >> discovery.url.tmp
+      args:
+        chdir: "{{playbook_dir}}/../config/coreos"
+      when: pinit.failed
+      
+  roles:
+    - role: init
+    - role: cloudconfigwriter
+      write_cconfig_pth: "{{playbook_dir}}/roles/coreos-cloudconfig/templates/init.tmp"
+      cconfig: init #inventory info added from this role...
+
+
+#...so the following will work
+- hosts: localhost
+  gather_facts: true
+  roles:
+    - role: ssh_config
+      ssh_config_hosts: init
+      host_key_checking: false
+
+
+- hosts: init
+  gather_facts: false
+  roles:
+    - role: coreos-bootstrap
+    - role: coreos-cloudconfig
+      cconfig: init
+     
