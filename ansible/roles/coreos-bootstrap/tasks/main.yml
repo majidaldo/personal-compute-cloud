@@ -34,15 +34,3 @@
   template: src={{role_path}}/files/runner dest=~/bin/pip mode=0755
   when: need_pip | failed
 
-# Deploy cloudconfig and run coreos-cloudinit
-
-
-- name: Install cloudconfig #just here in case of templating
-  template: src={{cconfig}} dest=/home/core/user_data
-  register: installcc
-  tags: cc
-
-- name: Run coreos-cloudinit
-  raw: sudo coreos-cloudinit --from-file=/home/core/user_data
-  when: installcc.changed #ansible is awesome
-  tags: cc
