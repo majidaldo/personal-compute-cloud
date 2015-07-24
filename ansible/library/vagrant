@@ -487,7 +487,8 @@ class VagrantWrapper(object):
                 if cnf != None:
                     d = {
                          'name' : vm_name,
-                         'vagrant_name' : vagrant_name, 
+                         'vagrant_name' : vagrant_name,
+                        'hostname' : vagrant_name.replace('_','-'),
                          'id': cnf['Host'],
                          'public_ip': cnf['HostName'],
                          'internal_ip': inst['internal_ip'],

@@ -21,7 +21,7 @@
 - name: add host info to inventory
   add_host:
     groupname=vagrant_hosts
-    hostname='{{item.vagrant_name}}'
+    hostname='{{item.hostname}}'
     ansible_ssh_port='{{item.port}}'
     ansible_ssh_host='{{item.public_ip}}'
     ansible_ssh_user='{{item.username}}'
@@ -30,3 +30,15 @@
   with_items: '{{vagrant.instances}}'
   when: "'{{command}}'=='up'"
   
+#ref. library/vagrant
+# 'name' : vm_name,
+# 'vagrant_name' : vagrant_name,
+# 'hostname' : vagrant_name.replace('_','-'),
+# 'id': cnf['Host'],
+# 'public_ip': cnf['HostName'],
+# 'internal_ip': inst['internal_ip'],
+# 'public_dns_name': cnf['HostName'],
+# 'port' : cnf['Port'],
+# 'username' : cnf['User'],
+# 'key' : cnf['IdentityFile'],
+# 'status' : self.vg.status(vagrant_name)   
