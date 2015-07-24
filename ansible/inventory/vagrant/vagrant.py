@@ -23,11 +23,12 @@ def list_running_hosts():
     for line in status.split('\n'):
         (_, host, key, value) = line.split('\r')[0].split('\n')[0].split(',')
         if key == 'state' and value == 'running':
-            hosts.append(host)
+            hosts.append(host.replace('_','-'))
     return hosts
 
 
 def get_host_details(host):
+    host=host.replace('-','_')
     cmd = "vagrant ssh-config {}".format(host)
     p = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     config = paramiko.SSHConfig()
