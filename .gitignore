@@ -1,6 +1,7 @@
 #emacs
 *~
 
+*.tmp
 
 *.log
 *.state
