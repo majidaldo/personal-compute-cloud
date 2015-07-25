@@ -7,6 +7,8 @@ hostname: $CHOSTNAME
 
 coreos:
   
+  update:
+    reboot-strategy: 'off'
   fleet:
     metadata: loc=local , role=init
     public-ip: "{{public_ip}}"
@@ -47,7 +49,6 @@ coreos:
       Where=/var/lib/docker
       Options=bind
   - name: docker.service
-  - name: docker-tcp.socket
   - name: 10-weave.network
   - name: loadregimg.service
   - name: install-weave.service

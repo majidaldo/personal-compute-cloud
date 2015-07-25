@@ -56,7 +56,8 @@ write_files:
 coreos:
 
   update:
-    reboot-strategy: off
+    reboot-strategy: 'off' #hah yaml parser changes this to false w/o "
+    #..which is not a valid choice for coreos
   
   fleet:
     public-ip: $public_ip
@@ -78,14 +79,12 @@ coreos:
       command: start
     - name: fleet.service
       command: start
-    - name: docker-tcp.socket
+    - name: docker-tcp.socket #docker socket already active??
       command: start
       enable: true
       content: |
         [Unit]
         Description=Docker Socket for the API
-        After=weavedns.service
-        Requires=weavedns.service
         
         [Socket]
         ListenStream=2375
@@ -104,7 +103,7 @@ coreos:
 
         [Network]
     - name: install-weave.service
-      command: stop
+      command: start
       enable: true
       content: |
         [Unit]
@@ -128,7 +127,7 @@ coreos:
         ExecStartPre=/usr/bin/docker pull registry.hub.docker.com/zettio/weavetools:latest
         ExecStartPre=/usr/bin/docker pull registry.hub.docker.com/zettio/weavedns:latest
         ExecStartPre=/usr/bin/docker pull registry.hub.docker.com/weaveworks/weaveexec:latest
-        Execstartpre=/usr/bin/docker tag -f registry.hub.docker.com/zettio/weave:latest zettio/weave:latest
+        ExecStartPre=/usr/bin/docker tag -f registry.hub.docker.com/zettio/weave:latest zettio/weave:latest
         ExecStartPre=/usr/bin/docker tag -f registry.hub.docker.com/zettio/weavetools:latest zettio/weavetools:latest
         ExecStartPre=/usr/bin/docker tag -f registry.hub.docker.com/zettio/weavedns:latest zettio/weavedns:latest
         ExecStartPre=/usr/bin/docker tag -f registry.hub.docker.com/weaveworks/weaveexec:latest weaveworks/weaveexec:latest
@@ -144,7 +143,7 @@ coreos:
         Requires=install-weave.service
         
         [Service]
-        ExecStartPre=/opt/bin/weave launch -iprange 10.128.0.0/24 -ipsubnet 10.128.0.0/25
+        ExecStartPre=/opt/bin/weave launch ${WEAVE_MANL_NET} ${WEAVE_AUTO_NET}
         ExecStart=/usr/bin/docker logs -f weave
         SuccessExitStatus=2
         ExecStop=/opt/bin/weave stop
@@ -176,8 +175,8 @@ coreos:
         
         [Service]
         EnvironmentFile=/home/core/sys.env
-        ExecStartPre=/opt/bin/weave launch-proxy
         ExecStartPre=/etc/profile.d/sys_env.sh
+        ExecStartPre=/opt/bin/weave launch-proxy
         ExecStart=/usr/bin/docker logs -f weaveproxy
         SuccessExitStatus=2
         ExecStop=/opt/bin/weave stop-proxy
@@ -298,7 +297,7 @@ coreos:
 
 
         
-    - name: fileshare.service
+    - name: fileshare.service #todo: chk if cpuguy83/nfsserver works
       command: start
       enable: true
       content: |
