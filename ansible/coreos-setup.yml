@@ -1,0 +1,81 @@
+---
+
+- hosts: localhost
+  gather_facts: false
+  vars:
+    cosc: "{{coreos_config}}"
+
+  roles:
+    
+    - role: cloudconfigwriter
+      write_cconfig_pth: "{{playbook_dir}}/roles/coreos-cloudconfig/templates/{{cosc}}.tmp"
+      cconfig: "{{cosc}}"
+
+
+
+- hosts: "{{coreos_config}}_config" #or maybe keep this free? compute_local_confi in compute_local
+  gather_facts: false
+
+  pre_tasks:
+    
+    - name: get outward-facing ip #really just for vagrant machines
+      shell: "python -c \"import socket; print socket.gethostbyname('{{inventory_hostname}}')\""
+      delegate_to: localhost 
+      changed_when: false
+      register: pubip
+      until: pubip.stderr == "" #idk why sometimes it fails
+      retries: 10
+      delay: 1
+      
+  roles:
+    
+    - role: coreos-bootstrap
+    - role: coreos-cloudconfig
+      cconfig: "{{coreos_config}}"
+      public_ip: "{{pubip.stdout}}"
+      
+  tasks:
+
+    #coodinate weave startup
+    #now that i've disabled weave on compute systemd units
+    #1. start the weave unit
+    #2. then weave connect compute computer from init
+    #3. then conintue with starting weavedns and weaveproxy on compute
+    #chk weave expose
+
+    - name: start weave unit #just the weave unit
+      service: name=weave.service      state=started
+      become: yes
+      become_method: sudo
+       
+    - name: weave status to see if we\'ve added this peer
+      shell: /opt/bin/weave status
+      delegate_to: init
+      register: ws
+      changed_when: false
+      tags: wc
+    - name: weave connect to peer
+      shell: /opt/bin/weave connect {{pubip.stdout}}
+      delegate_to: init
+      when: "'{{pubip.stdout}}' not in ws.stdout"
+      tags: wc
+
+    - name: start weave dns
+      service: name=weavedns.service   state=started
+      become: yes
+      become_method: sudo
+    - name: start weave proxy
+      service: name=weaveproxy.service state=started
+      become: yes
+      become_method: sudo
+
+    - name: weave expose so that we can have the puter see weave
+      shell: /usr/bin/echo ${WEAVE_CIDR} && /opt/bin/weave expose ${WEAVE_CIDR}
+      when: "'{{pubip.stdout}}' not in ws.stdout"
+
+    - name: mount my project files
+      service: name=projectfiles.service state=started
+      become: yes
+      become_method: sudo
+      
+ 

@@ -1,0 +1,6 @@
+---
+- hosts: init
+  gather_facts: true
+  tasks:
+    - action: setup
+      

@@ -1,9 +1,7 @@
 ---
-
 #cloud-config
 
 hostname: $CHOSTNAME
-
 
 coreos:
   
@@ -20,8 +18,9 @@ coreos:
     listen-peer-urls: http://{{public_ip}}:2380  
 
   units:
+#  - name: docker-tcp.socket
 #  - name: fleet.service
-#  - name: etcd2.service
+  - name: etcd2.service
   - name: projectfiles.service
   - name: varlibdocker.service
     command: start
@@ -61,6 +60,34 @@ coreos:
       ExecStart=/usr/bin/echo stub
   - name: registry.service
   - name: fileshare.service
+    content: |
+      [Unit]
+      Description=expose fileshare to network
+      Requires=weaveproxy.service
+      After=   weaveproxy.service
+      
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+
+      ExecStart=/opt/bin/weave expose ${WEAVE_EXPOSE_IP}/${WEAVE_AUTO_BIT}
+      
+      ExecStartPre=/home/core/fwd.sh tcp \
+      ${WEAVE_EXPOSE_IP} 111 $NFS_SERVER 111
+      ExecStartPre=/home/core/fwd.sh udp \
+      ${WEAVE_EXPOSE_IP} 111 $NFS_SERVER 111
+      ExecStartPre=/home/core/fwd.sh tcp \
+      ${WEAVE_EXPOSE_IP} 2049 $NFS_SERVER 2049
+      ExecStartPre=/home/core/fwd.sh udp \
+      ${WEAVE_EXPOSE_IP} 2049 $NFS_SERVER 2049
+      ExecStartPre=/home/core/fwd.sh tcp \
+      ${WEAVE_EXPOSE_IP} $NFS_PORT $NFS_SERVER $NFS_PORT
+      ExecStartPre=/home/core/fwd.sh udp \
+      ${WEAVE_EXPOSE_IP} $NFS_PORT $NFS_SERVER $NFS_PORT
+
+      ExecStart=/usr/bin/echo file share exposed
+      
+          
     
 write_files:
 - path: /etc/modules-load.d/loop.conf
@@ -73,4 +100,5 @@ write_files:
 - path: /etc/profile.d/sys_env.sh
 - path: /etc/systemd/system/docker.service.d/50-insecure-registry-mirr.conf
 - path: /home/core/waitforfile.sh
+- path: /home/core/fwd.sh
 

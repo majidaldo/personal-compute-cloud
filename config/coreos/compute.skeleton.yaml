@@ -4,22 +4,44 @@
 
 
 coreos:
+  
+  update:
+    
+    reboot-strategy: 'off'
+    
   fleet:
+    
     metadata: loc=local , role=compute
-    public-ip: $public_ipv4
+    public-ip: '{{public_ip}}'
+
+  etcd2:
+    
+    discovery: ${DISCOVERY_URL}
+    advertise-client-urls: http://{{public_ip}}:2379
+    initial-advertise-peer-urls: http://{{public_ip}}:2380
+    listen-client-urls: http://0.0.0.0:2379
+    listen-peer-urls: http://{{public_ip}}:2380  
+
+    
   units:
+#  - name: fleet.service
+  - name: etcd2.service    
   - name: docker.service
-  - name: docker-tcp.socket
   - name: 10-weave.network
   - name: install-weave.service
   - name: weave.service
+    command: stop
   - name: weavedns.service
+    command: stop
   - name: weaveproxy.service
-  #projectfiles todo
+    command: stop
+  - name: projectfiles.service
+    command: stop
     
 write_files:
 - path: /home/core/sys.env
 - path: /etc/profile.d/sys_env.sh
+  #todo see if you can get mirr to work
 - path: /etc/systemd/system/docker.service.d/50-insecure-registry.conf
 - path: /home/core/waitforfile.sh
 

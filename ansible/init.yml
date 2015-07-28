@@ -42,4 +42,4 @@
     - role: coreos-bootstrap
     - role: coreos-cloudconfig
       cconfig: init
-     
+      public_ip: '{{pvt_ip}}' #from the vagrant up
