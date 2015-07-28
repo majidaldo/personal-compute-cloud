@@ -3,10 +3,4 @@ localhost ansible_connection=local
 [coreos]
 init
 compute-local
-
-
-# config -> hosts
-[init_config]
-init
-[compute_config]
-compute-local
+compute-local-inst[0:9]

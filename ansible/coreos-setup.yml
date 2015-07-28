@@ -13,10 +13,14 @@
 
 
 
-- hosts: "{{coreos_config}}_config" #or maybe keep this free? compute_local_confi in compute_local
+- hosts: "{{coreos_hosts}}"
   gather_facts: false
 
   pre_tasks:
+
+    - name: add host to coreos grp
+      add_host: hostname={{inventory_hostname}}
+                groups=coreos
     
     - name: get outward-facing ip #really just for vagrant machines
       shell: "python -c \"import socket; print socket.gethostbyname('{{inventory_hostname}}')\""
@@ -70,7 +74,7 @@
       become_method: sudo
 
     - name: weave expose so that we can have the puter see weave
-      shell: /usr/bin/echo ${WEAVE_CIDR} && /opt/bin/weave expose ${WEAVE_CIDR}
+      shell: /opt/bin/weave expose ${WEAVE_CIDR}
       when: "'{{pubip.stdout}}' not in ws.stdout"
 
     - name: mount my project files
