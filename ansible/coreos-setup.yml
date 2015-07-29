@@ -74,7 +74,9 @@
       become_method: sudo
 
     - name: weave expose so that we can have the puter see weave
-      shell: /opt/bin/weave expose ${WEAVE_CIDR}
+      shell: source /etc/profile.d/sys_env.sh && \
+             /opt/bin/weave expose ${WEAVE_CIDR}
+      #not sure the weavecidr is necessary but i'm not changing it
       when: "'{{pubip.stdout}}' not in ws.stdout"
 
     - name: mount my project files
