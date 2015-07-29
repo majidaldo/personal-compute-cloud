@@ -5,11 +5,12 @@
 
   roles:
     - role: compute-local
+#      count: 2
 
       
 - hosts: localhost
   gather_facts: true
   roles:
     - role: ssh_config
-      ssh_config_hosts: compute-local #hyphen works!
+      ssh_config_hosts: '{{groups.vagrant_hosts}}' #compute-local #hyphen works!
       host_key_checking: false
