@@ -9,7 +9,7 @@ write_files:
     permissions: 666
     content: |
       REGISTRY_HOST==
-      WEAVE_CIDR='net:default net:${WEAVE_MANL_ADD}/${WEAVE_MANL_BIT}'
+      WEAVE_CIDR='net:${WEAVE_MANL_ADD}/${WEAVE_MANL_BIT} net:${WEAVE_AUTO_ADD}/${WEAVE_AUTO_BIT}'
       NFS_SERVER==
 
   - path: /etc/profile.d/sys_env.sh
@@ -20,6 +20,7 @@ write_files:
           eval export $env
       done <  /home/core/sys.env
       #docker env . theres a 'export' here. eval $(export ...)
+      #proxy-env changed to just env in >1.0.1 release
       eval $(/opt/bin/weave proxy-env)
       if grep -Fxq "DOCKER_HOST*" /home/core/sys.env
       then
@@ -52,7 +53,7 @@ write_files:
       [Service]
       EnvironmentFile=/home/core/sys.env
       Environment="DOCKER_OPTS=\
-      --insecure-registry=10.128.0.0/16 \
+      --insecure-registry=${WEAVE_MANL_ADD}/${WEAVE_MANL_BIT} \
       --insecure-registry=${REGISTRY_HOST} \
       --registry-mirror=http://${REGISTRY_HOST}"
   
@@ -61,7 +62,7 @@ write_files:
       [Service]
       EnvironmentFile=/home/core/sys.env
       Environment='DOCKER_OPTS=\
-      --insecure-registry=10.128.0.0/16 \
+      --insecure-registry=${WEAVE_MANL_ADD}/${WEAVE_MANL_BIT} \
       --insecure-registry=${REGISTRY_HOST}'
       
       
@@ -146,17 +147,26 @@ coreos:
         ExecStartPre=/usr/bin/curl \
         --silent \
         --location \
-        https://github.com/weaveworks/weave/releases/download/latest_release/weave \
+        https://github.com/weaveworks/weave/releases/download/${WEAVE_SRCVER}/weave \
         --output /opt/bin/weave
         ExecStartPre=/usr/bin/chmod +x /opt/bin/weave
-        ExecStartPre=/usr/bin/docker pull registry.hub.docker.com/zettio/weave:latest
-        ExecStartPre=/usr/bin/docker pull registry.hub.docker.com/zettio/weavetools:latest
-        ExecStartPre=/usr/bin/docker pull registry.hub.docker.com/zettio/weavedns:latest
-        ExecStartPre=/usr/bin/docker pull registry.hub.docker.com/weaveworks/weaveexec:latest
-        ExecStartPre=/usr/bin/docker tag -f registry.hub.docker.com/zettio/weave:latest zettio/weave:latest
-        ExecStartPre=/usr/bin/docker tag -f registry.hub.docker.com/zettio/weavetools:latest zettio/weavetools:latest
-        ExecStartPre=/usr/bin/docker tag -f registry.hub.docker.com/zettio/weavedns:latest zettio/weavedns:latest
-        ExecStartPre=/usr/bin/docker tag -f registry.hub.docker.com/weaveworks/weaveexec:latest weaveworks/weaveexec:latest
+        ExecStartPre=/usr/bin/docker pull \
+        registry.hub.docker.com/weaveworks/weave:${WEAVE_IMGVER}
+        ExecStartPre=/usr/bin/docker pull \
+        registry.hub.docker.com/weaveworks/weavedns:${WEAVE_IMGVER}
+        ExecStartPre=/usr/bin/docker pull \
+        registry.hub.docker.com/weaveworks/weaveexec:${WEAVE_IMGVER}
+        ExecStartPre=/usr/bin/docker tag -f \
+        registry.hub.docker.com/weaveworks/weave:${WEAVE_IMGVER} \
+        weaveworks/weave:${WEAVE_IMGVER}
+        ExecStartPre=/usr/bin/docker tag -f \
+        registry.hub.docker.com/weaveworks/weavedns:${WEAVE_IMGVER} \
+        weaveworks/weavedns:${WEAVE_IMGVER}
+        ExecStartPre=/usr/bin/docker tag -f \
+        registry.hub.docker.com/weaveworks/weaveexec:${WEAVE_IMGVER} \
+        weaveworks/weaveexec:${WEAVE_IMGVER}
+        #explicitly getting from registry.hub to bypass docker reg mirr
+        #setting i might have
         ExecStart=/bin/echo Weave Installed
     - name: weave.service
       command: start
@@ -292,7 +302,7 @@ coreos:
         /tsad-proj/tsad-bigfiles/images/docker/bootstrap/registry.tar
         
        
-    - name: registry.service
+    - name: registry.service #
       command: start
       enable: true
       content: |
@@ -308,6 +318,7 @@ coreos:
         Restart=on-failure
         #ExecStartPre=/etc/profile.d/sys_env.sh
         #EnvironmentFile=/home/core/sys.env
+        ExecStartPre=/usr/bin/mkdir -p /tsad-proj/tsad-bigfiles/images/docker/registry
         ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
         /usr/bin/docker kill registry'
         ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
@@ -322,9 +333,10 @@ coreos:
         -v /tsad-proj/tsad-bigfiles/images/docker/registry:/registry \
         -e STORAGE_PATH=/registry \
         -e SETTINGS_FLAVOR=dev \
+        -e GUNICORN_OPTS=[--preload] \
         -e MIRROR_SOURCE=https://registry-1.docker.io \
         -e MIRROR_SOURCE_INDEX=https://index.docker.io \
-        -p 80:5000 \
+        -p 5000:5000 \
         registry '
         ExecStart=/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
         /usr/bin/docker logs -f registry'
@@ -348,7 +360,7 @@ coreos:
         #no timeout
         TimeoutStartSec=0
         Restart=on-failure
-        #and you need to modprobe nfs; modprobe nfsd but im not using this
+        #and you need to: modprobe nfs; modprobe nfsd; but im not using this
         #ExecStartPre=/etc/profile.d/sys_env.sh
         #EnvironmentFile=/home/core/sys.env
         ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
@@ -372,4 +384,5 @@ coreos:
         ExecStop=/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
         /usr/bin/docker stop nfs-server'
 
+#todo: file share make a var out of the file share pth
 

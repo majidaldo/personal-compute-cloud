@@ -11,8 +11,8 @@ coreos:
     
   fleet:
     
-    metadata: loc=local , role=compute
-    public-ip: '{{public_ip}}'
+    metadata: role=compute #, loc=local
+    public-ip: '{{public_ip}}' #todo : put fleet on weave
 
   etcd2:
     
@@ -25,7 +25,8 @@ coreos:
     
   units:
 #  - name: fleet.service
-  - name: etcd2.service    
+#todo: have remote machines see my etcd through some nat rules
+#  - name: etcd2.service 
   - name: docker.service
   - name: 10-weave.network
   - name: install-weave.service
@@ -41,7 +42,9 @@ coreos:
 write_files:
 - path: /home/core/sys.env
 - path: /etc/profile.d/sys_env.sh
-  #todo see if you can get mirr to work
-- path: /etc/systemd/system/docker.service.d/50-insecure-registry.conf
+  #todo: make a compute-local config that uses the insecure reg w/ mirr
+  #since it's best to get imgs locally
+  #and a compute-remote config that doesn't use mirr
+- path: /etc/systemd/system/docker.service.d/50-insecure-registry-mirr.conf
 - path: /home/core/waitforfile.sh
 
