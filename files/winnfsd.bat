@@ -1,2 +1,2 @@
 WinNFSd.exe . ddata
-rem extra t  becomes a slash! go figure! exports as /tsad-proj
+REM extra d becomes a slash! go figure! exports as /data
