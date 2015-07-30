@@ -37,13 +37,13 @@ export LC_ALL="en_US.UTF-8"
 
 #project dir
 export G=$USERPROFILE/Documents/Github
-export P=$G/tsad-proj
-export S=$P/tsad-sys
+export P=$G/personal-compute-cloud
+
 
 #export PATH=$PATH:$S/config/ansible/cygwin
 
 
-cd $S
+cd $P
 
 
 
