@@ -1,3 +1,3 @@
 # tsad-sys
-system setup files for majidaldo/tsad (docker)
+personal compute cloud using coreos, docker, and weave.
 
