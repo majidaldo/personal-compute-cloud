@@ -1,0 +1,22 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+
+Vagrant.configure(2) do |config|
+
+  
+  config.vm.box = "coreos-alpha"
+  
+  config.vm.network "private_network", ip: "192.168.179.10"
+
+  config.vm.synced_folder "../", "/project", type: "nfs"
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "1024"
+  end
+
+  config.vm.provision "shell", path: "makeregistry.sh"
+    
+end
+
