@@ -19,6 +19,7 @@ pthtype=${1-notgiven}
 if [ $pthtype = "remote" ]
 then
     PROJECT_DIR=${PROJECT_DIR_ROOT-$3}
+    PROJECT_DIR=`echo $PROJECT_DIR | sed 's/~/\/home\/core\//'`
 elif [ $pthtype = "local" ]
 then
     PROJECT_DIR=$PROJECT_DIR_REL
