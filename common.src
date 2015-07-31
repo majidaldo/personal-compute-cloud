@@ -1,6 +1,7 @@
 #this can be copied anywhere and would work
 
-SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+SCRIPTDIR=`dirname $0`
+SCRIPT_DIR=$SCRIPTDIR
 
 rtfile="root.dir"
 find_up () {
