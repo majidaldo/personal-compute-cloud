@@ -6,3 +6,7 @@ personal compute cloud using ansible (ansible-vagrant ( vagrant-python)) coreos,
 - Ansible: tested with 1.9. works on windows with cygwin with setup/cygwin/install-myansible.sh
 - python-vagrant
 - Vagrant: windows users should install vagrant-winnfsd setup/install-vagrant.bat
+
+
+## Project Setup
+run setup/setup.sh
