@@ -1,0 +1,16 @@
+#this can be copied anywhere and would work
+
+SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+rtfile="root.dir"
+find_up () {
+    path=$(pwd)
+    while [[ "$path" != "" && ! -e "$path/${rtfile}" ]]; do
+	path=${path%/*}
+    done
+    echo "$path"
+}
+rtdir=$(find_up)
+
+ENVCMD=${rtdir}/config/project.env.sh
+
