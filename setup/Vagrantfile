@@ -7,16 +7,20 @@ Vagrant.configure(2) do |config|
   
   config.vm.box = "coreos-alpha"
   
-  config.vm.network "private_network", ip: "192.168.179.10"
+  config.vm.network "private_network", ip: "192.168.179.13"
+                         #1st 3 digits sort of hard coded
 
-  config.vm.synced_folder "../", "/project", type: "nfs"
+  config.vm.synced_folder ENV['local_projectdir'] , ENV['remote_projectdir'], type: "nfs"
   config.vm.synced_folder ".", "/vagrant", disabled: true
   
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "1024"
   end
 
-  config.vm.provision "shell", path: "makeregistry.sh"
+  config.vm.provision "shell" do |registry|
+    registry.inline= "cd $1/setup && ./registry_img.sh"
+    registry.args= "#{ENV['remote_projectdir']}"
+  end  
     
 end
 
