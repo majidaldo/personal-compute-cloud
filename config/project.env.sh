@@ -22,11 +22,10 @@ then
 fi
 
 rorl=${2-remote}
-if [ "$2" != "" ]
+if [ "$rorl" != "local" ] && [ "$rorl" != "remote" ];
 then
-    rorl=remote
-else
-    rorl=local
+    echo "supply either local or remote as second arg"
+    exit 1
 fi
 
 thisdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
