@@ -1,15 +1,33 @@
 #!/bin/sh
 
 #creates a block device from file(s) on the fs
+#here we're creating a btrfs fs for docker images to be stored on
 
-vldf=/tsad-proj/tsad-bigfiles/images/docker/varlibdocker
-#todo to generalize make variable out of /home/core/vld
+#can supply size in GB as optional first arg. so if the size
+# is supplied then you can supply optionally the location of
+# /var/lib/docker
+
+source ../common.src
+
+
+vldf=`$ENVCMD VARLIBDOCKER_DIR`
 #and /dev/varlibdocker
+vgb=`$ENVCMD VARLIBDOCKER_GB`
 
-gb=10
+gb=${1:-$vgb} #GB arg defaults to the project setting
+rxp='^[0-9]+$'
+if ! [[ $gb =~ $rxp ]] ; then
+    echo "error: VARLIBDOCKER_GB is not a + int" >&2; exit 1
+else
+    if [ "$2" != "" ]
+    then
+	vldf=$2
+    fi
+fi
+
+
+
 start=0
-
-    #!
 if [  ! -d "$vldf" ];
 then
     mkdir -p $vldf
