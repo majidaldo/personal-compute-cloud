@@ -21,7 +21,7 @@ then
     fi
 fi
 
-rorl=${2-remote}
+rorl=${2-local}
 if [ "$rorl" != "local" ] && [ "$rorl" != "remote" ];
 then
     echo "supply either local or remote as second arg"
