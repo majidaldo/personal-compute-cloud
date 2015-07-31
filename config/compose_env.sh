@@ -1,5 +1,7 @@
 #!/bin/sh
 
+#todo: gist this
+
 #use: thisscirpt.sh envfile1 env2 env3 [export]
 
 
