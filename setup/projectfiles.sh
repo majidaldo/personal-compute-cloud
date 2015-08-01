@@ -16,5 +16,11 @@ then
 	      "btrfs f/s creation for /var/lib/docker"
 fi
 
+if [ `$ENVCMD STUFF_REGISTRY_INSETUP` = true ]
+then
+    ./vagrant provision --provision-with \
+	      "stuff docker registry"
+fi
+
 ./vagrant destroy -f
 
