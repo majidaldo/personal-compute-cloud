@@ -28,7 +28,15 @@ Vagrant.configure(2) do |config|
     varlibdocker.inline= "cd $1/setup && ./varlibdocker.sh"
     varlibdocker.args= "#{ENV['remote_projectdir']}"
     varlibdocker.privileged= true #it's the default anyways
+  end
+
+  config.vm.provision "stuff docker registry",
+                      type: "shell" do |stuffregistry|
+    stuffregistry.inline= "cd $1/setup && ./stuffregistry.sh"
+    stuffregistry.args= "#{ENV['remote_projectdir']}"
+    stuffregistry.privileged= true #it's the default anyways
   end  
+
 
     
 end
