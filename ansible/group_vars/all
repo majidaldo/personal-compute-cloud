@@ -1,0 +1,3 @@
+---
+#ptr to  variables script
+xenv: "{{playbook_dir}}/../config/project.env.sh "#+ a spc
