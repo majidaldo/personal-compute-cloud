@@ -1,3 +1,3 @@
 using the dirs here as self-built images
 no other dirs should be  here
-only the dirs with number-name get built
+only the dirs with number-name get built with the build script
