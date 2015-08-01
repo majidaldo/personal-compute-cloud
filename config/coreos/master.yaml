@@ -337,7 +337,7 @@ coreos:
         -e MIRROR_SOURCE=https://registry-1.docker.io \
         -e MIRROR_SOURCE_INDEX=https://index.docker.io \
         -p 5000:5000 \
-        registry '
+        docker-registry '
         ExecStart=/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
         /usr/bin/docker logs -f registry'
         ExecStop=/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
