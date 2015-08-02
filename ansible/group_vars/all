@@ -1,3 +1,13 @@
 ---
 #ptr to  variables script
 xenv: "{{playbook_dir}}/../config/project.env.sh "#+ a spc
+#use as the following
+
+project_dir: "{{playbook_dir}}/../"
+sys_dir: "{{project_dir}}" #funny but i'm leaving it here for now
+
+#FAILS cloudconfigwriter!!!!IT'S NOT EVEN REFERENCED!!!!
+#project_files: "{{lookup('pipe',xenv+'PROJECT_FILES')}}"
+
+
+
