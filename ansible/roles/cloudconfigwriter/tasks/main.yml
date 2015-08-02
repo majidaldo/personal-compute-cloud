@@ -1,7 +1,6 @@
 ---
 # tasks file for cloudconfigwriter
 
-
  #this is just to put it in the lookup
 - set_fact: cconfig_pth={{cc_dir}}/{{cconfig}}.tmp
 - set_fact: out_cconfig_pth={{write_cconfig_pth}} #'arg in'
@@ -12,7 +11,6 @@
 - name: stub dst remote file
   shell: touch {{out_cconfig_pth}}
   changed_when: false
-
 
 - name: generate configuration
   local_action: shell ./cconfig.sh {{cconfig}} > {{cconfig_pth}}
