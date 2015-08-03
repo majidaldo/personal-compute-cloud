@@ -179,7 +179,7 @@ coreos:
         Requires=install-weave.service
         
         [Service]
-        ExecStartPre=/opt/bin/weave launch ${WEAVE_AUTO_NET} ${WEAVE_MANL_NET}
+        ExecStartPre=/opt/bin/weave launch -ipsubnet ${WEAVE_AUTO_NET} -iprange ${WEAVE_MANL_NET}
         ExecStart=/usr/bin/docker logs -f weave
         SuccessExitStatus=2
         ExecStop=/opt/bin/weave stop
@@ -260,7 +260,7 @@ coreos:
         Type=oneshot
         RemainAfterExit=yes
         EnvironmentFile=/home/core/sys.env
-        ExecStartPre=/tsad-proj/tsad-sys/docker/build.sh
+        ExecStartPre=${PROJECT_DIR}/docker/build.sh
         ExecStart=/bin/echo 'bootstrapped registry'
         
        
@@ -278,10 +278,10 @@ coreos:
         Type=oneshot
         RemainAfterExit=yes
         EnvironmentFile=/home/core/sys.env
-        ExecStartPre=-/usr/bin/mkdir /tsad-proj
+        ExecStartPre=-/usr/bin/mkdir ${PROJECT_DIR}
         ExecStart=/usr/bin/mount -v -o ${NFS_OPTS} \
-        ${NFS_SERVER}:/tsad-proj /tsad-proj
-        ExecStop=/usr/bin/umount /tsad-proj
+        ${NFS_SERVER}:${NFS_SHARE} ${PROJECT_DIR}
+        ExecStop=/usr/bin/umount ${PROJECT_DIR}
 
 
     - name: loadregimg.service
@@ -297,9 +297,9 @@ coreos:
         Type=oneshot
         RemainAfterExit=yes
         ExecStartPre=/home/core/waitforfile.sh \
-        /tsad-proj/tsad-bigfiles/images/docker/bootstrap/registry.tar
+        ${REGISTRYIMG_DIR}/registry.tar
         ExecStart=/usr/bin/docker load --input \
-        /tsad-proj/tsad-bigfiles/images/docker/bootstrap/registry.tar
+        ${REGISTRYIMG_DIR}/registry.tar
         
        
     - name: registry.service #
@@ -318,7 +318,7 @@ coreos:
         Restart=on-failure
         #ExecStartPre=/etc/profile.d/sys_env.sh
         #EnvironmentFile=/home/core/sys.env
-        ExecStartPre=/usr/bin/mkdir -p /tsad-proj/tsad-bigfiles/images/docker/registry
+        ExecStartPre=/usr/bin/mkdir -p ${REGISTRYDATA_DIR}
         ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
         /usr/bin/docker kill registry'
         ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
@@ -330,7 +330,7 @@ coreos:
         ${REGISTRY_WNET} \
         --name registry \
         -d \
-        -v /tsad-proj/tsad-bigfiles/images/docker/registry:/registry \
+        -v ${REGISTRYDATA_DIR}:/registry \
         -e STORAGE_PATH=/registry \
         -e SETTINGS_FLAVOR=dev \
         -e GUNICORN_OPTS=[--preload] \

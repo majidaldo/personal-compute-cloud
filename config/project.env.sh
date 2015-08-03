@@ -31,11 +31,6 @@ fi
 thisdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd $thisdir
 
-ld=$(echo ${thisdir}/project_dir.env.sh local)
-echo PROJECT_DIR=$ld >  ${thisdir}/local-project_dir.env.tmp
-rd=$(echo ${thisdir}/project_dir.env.sh remote)
-echo PROJECT_DIR=$rd > ${thisdir}/remote-project_dir.env.tmp
-
 
 #cool syntax:  cmdthattakesfilearg <( cmdthatprints )
 #..but  the following only works in bash

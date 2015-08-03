@@ -32,7 +32,7 @@ coreos:
       [Service]
       Type=oneshot
       RemainAfterExit=yes
-      ExecStartPre=-/tsad-proj/tsad-sys/docker/create_varlibdocker.sh
+      ExecStartPre=-${PROJECT_DIR}/setup/varlibdocker.sh
       ExecStart=/usr/bin/mountpoint -q /home/core/vld
   - name: var-lib-docker.mount
     command: start

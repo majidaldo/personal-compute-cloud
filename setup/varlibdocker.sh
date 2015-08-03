@@ -1,4 +1,6 @@
 #!/bin/sh
+cd $(dirname $0)
+source ../common.src
 
 #creates a block device from file(s) on the fs
 #here we're creating a btrfs fs for docker images to be stored on
@@ -7,7 +9,6 @@
 # is supplied then you can supply optionally the location of
 # /var/lib/docker
 
-source ../common.src
 
 
 vldf=`$ENVCMD VARLIBDOCKER_DIR`
