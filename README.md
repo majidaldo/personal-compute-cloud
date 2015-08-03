@@ -7,6 +7,9 @@ personal compute cloud using ansible (ansible-vagrant ( vagrant-python)) coreos,
 - python-vagrant
 - Vagrant: windows users should install vagrant-winnfsd setup/install-vagrant.bat
 
+## Project Environment Variables
+config/project.env.sh
 
 ## Project Setup
 run setup/setup.sh
+kill winnfsd then start teh one in the base dir
