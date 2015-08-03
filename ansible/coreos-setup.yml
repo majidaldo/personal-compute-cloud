@@ -30,6 +30,20 @@
       until: pubip.stderr == "" #idk why sometimes it fails
       retries: 10
       delay: 1
+
+    - name: weave connect to peer
+      shell: |
+        #for when a different machine takes the same ip
+        #forget shouldnt return error code
+        #but anyways...weave forget is not working
+        #..if host is alive!
+        /opt/bin/weave forget {{pubip.stdout}} && \
+        /opt/bin/weave connect {{pubip.stdout}}
+      delegate_to: init
+      changed_when: false
+      tags: wc
+
+      
       
   roles:
     
@@ -51,17 +65,37 @@
       service: name=weave.service      state=started
       become: yes
       become_method: sudo
-       
-    - name: weave status to see if we\'ve added this peer
-      shell: /opt/bin/weave status
+
+    - name: weave status to see if we\'ve added the peer
+      shell: /opt/bin/weave status 
       delegate_to: init
       register: ws
       changed_when: false
       tags: wc
+    - name: get unique id of peer on weave
+      shell: |
+        #gets the unique id of the machine (better to use instead of ip)
+        /opt/bin/weave status > ws.tmp && \
+        /usr/bin/cat ws.tmp | \
+        #want only the first (self) result hench '-m 1'
+        /usr/bin/grep -m 1 -o -e 'UID[ ][0-9]*' | \
+        /usr/bin/sed 's/UID //' && \
+        /usr/bin/rm ws.tmp
+        #does not work with piping. go figure.
+      register: uid
+      changed_when: false
+      tags: wc
+      
     - name: weave connect to peer
-      shell: /opt/bin/weave connect {{pubip.stdout}}
+      shell: |
+        #for when a different machine takes the same ip
+        #forget shouldnt return error code
+        #but anyways...weave forget is not working
+        #..if host is alive!
+        /opt/bin/weave forget {{pubip.stdout}} && \
+        /opt/bin/weave connect {{pubip.stdout}}
       delegate_to: init
-      when: "'{{pubip.stdout}}' not in ws.stdout"
+      when: "uid.stdout not in ws.stdout"
       tags: wc
 
     - name: start weave dns
@@ -77,7 +111,7 @@
       shell: source /etc/profile.d/sys_env.sh && \
              /opt/bin/weave expose ${WEAVE_CIDR}
       #not sure the weavecidr is necessary but i'm not changing it
-      when: "'{{pubip.stdout}}' not in ws.stdout"
+      when: "uid.stdout not in ws.stdout"
 
     - name: mount my project files
       service: name=projectfiles.service state=started
