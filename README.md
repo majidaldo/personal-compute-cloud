@@ -1,5 +1,9 @@
 # CoreOS-based personal compute cloud
 personal compute cloud using ansible (ansible-vagrant ( vagrant-python)) coreos, docker, vagrant, and weave.
+## Why?
+because scientific computing. link to explanation post.
+## Features
+## How it Works
 
 ## Prerequisites
 
