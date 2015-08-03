@@ -19,6 +19,7 @@ config/project.env.sh
 ## Project Setup
 
 go into config/project.env and change VARLIBDOCKER_GB to say 10 (GB)
+add your dockerfiles like docker/999-mybusybox
 
 run setup/setup.sh
 kill winnfsd then start teh one in the base dir
