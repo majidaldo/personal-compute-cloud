@@ -12,6 +12,7 @@ There is a controller machine prividing coordination and services; and compute m
 - global NFS fileshare .. no messing with sending and receiving files 
 - docker images persist over instantiations of the controller machine
 - the same (ansible) compute provisioning script applies to all compute providers
+- ssh access to machines is automatically configured.
 
 small print: claims of globally accessible services have not been tested. but the configuration is there for it to happen.
 
