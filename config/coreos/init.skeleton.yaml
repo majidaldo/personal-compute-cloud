@@ -54,6 +54,16 @@ coreos:
   - name: weave.service #todo: chk if fails if varlibdocker is from scratch
   - name: weavedns.service
   - name: weaveproxy.service
+  - name: weaveforget.service
+    command: start
+    content: |
+      [Unit]
+      Description= forget lost hosts
+      Requires=weave.service
+      After=   weave.service
+      [Service]
+      ExecStart=${PROJECT_DIR}/config/coreos/weaveforget.sh
+      
   - name: registry.service
   - name: stuffregistry.service #todo tst if htis long proc makes a prblm
 #    content: |
@@ -85,7 +95,6 @@ coreos:
       ${WEAVE_EXPOSE_IP} $NFS_PORT $NFS_SERVER $NFS_PORT
       ExecStartPre=/home/core/fwd.sh udp \
       ${WEAVE_EXPOSE_IP} $NFS_PORT $NFS_SERVER $NFS_PORT
-
       ExecStart=/usr/bin/echo file share exposed
       
           

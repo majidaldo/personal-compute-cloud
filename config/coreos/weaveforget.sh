@@ -9,12 +9,12 @@ to=5
 #bad and not scalable
 #nccmd="docker run --rm busybox nc"
 #does not have the port scanner!
-nccmd="ncat" 
+nccmd="/usr/bin/ncat" 
 
 while true
 do
     #status is only app up to Reconn section
-    peers=`weave status | sed -e 's/Peers:\(.*\)Reconnects:/\1/' | pcregrep -o -e $re`
+    peers=`/opt/bin/weave status | /usr/bin/sed -e 's/Peers:\(.*\)Reconnects:/\1/' | /usr/bin/pcregrep -o -e $re`
     #echo $peers; exit
     for apr in $peers
     do
