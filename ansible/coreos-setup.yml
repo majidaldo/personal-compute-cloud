@@ -31,18 +31,6 @@
       retries: 10
       delay: 1
 
-    - name: weave connect to peer
-      shell: |
-        #for when a different machine takes the same ip
-        #forget shouldnt return error code
-        #but anyways...weave forget is not working
-        #..if host is alive!
-        /opt/bin/weave forget {{pubip.stdout}} && \
-        /opt/bin/weave connect {{pubip.stdout}}
-      delegate_to: init
-      changed_when: false
-      tags: wc
-
       
       
   roles:
