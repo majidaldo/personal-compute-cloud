@@ -4,8 +4,10 @@ personal compute cloud using [Ansible](http://www.ansible.com), [CoreOS](http://
 ## Why?
 because scientific computing. link to explanation post.
 
+## What it Does
+Two types of machines are started to support the scientific computing workflow (using Docker). There is a local virtualized controller machine (called init) prividing coordination and services; and compute machines that are more ephemeral. A local compute machine is brought up for 'development'. But when a remote compute machine is acquired, it would use the same (ansible) setup script (untested). Therefore, the local compute machine is really a stand-in for a remote machine. The controller and compute machines together provide:
+
 ## Features
-There is a controller machine (called init) prividing coordination and services; and compute machines that are more ephemeral. A local compute machine is brought up for 'development'. But when a remote compute machine is acquired, it would use the same (ansible) setup script. Therefore, the local compute machine is really a stand-in for a remote machine. The controller and compute machines together provide:
 - global network addressing of docker containers across clouds (thanks to weave)
 - private docker registry accessible on all compute hosts (started on boot)
 - automatic building of Dockerfiles and pushing them to the registry (on boot)
