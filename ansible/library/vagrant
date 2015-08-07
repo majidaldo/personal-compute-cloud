@@ -61,8 +61,16 @@ options:
     aliases: []
   log:
     default: false
+  share_folder:
+    default: None
+    description:
+      - shared folder directory which mounts to /vagrant on the machine by default
+  share_mount:
+    default: /vagrant
   config_code:
     default: ""
+    description:
+      - custom configuation code that goes in the vagrantfile such as hypervisor options. the word config. will be converted to config_"machine" so that you can have machine-specific options.
   
 examples:
    - code: 'local_action: vagrant cmd=up box_name=lucid32 vm_name=webserver'
@@ -84,7 +92,8 @@ VAGRANT_FILE_VM_STANZA_HEAD = """
     %s_config.vm.synced_folder ".", "/vagrant", disabled: true
 """
 VAGRANT_FILE_HOSTNAME_LINE     = "    %s_config.vm.host_name = \"%s\"\n"
-VAGRANT_FILE_PORT_FORWARD_LINE = "    %s_config.vm.network \"forwarded_port\", guest: %s, host: %s\n"  
+VAGRANT_FILE_PORT_FORWARD_LINE = "    %s_config.vm.network \"forwarded_port\", guest: %s, host: %s\n"
+VAGRANT_FILE_SYNCED_FOLDER_LINE ="    %s_config.vm.synced_folder \"%s\", \"%s\", type: \"nfs\" , disabled: %s"
 VAGRANT_FILE_VM_STANZA_TAIL="  end\n"
 
 VAGRANT_FILE_TAIL = "\nend\n"
@@ -94,7 +103,7 @@ VAGRANT_LOG_FN='vagrant.log'
 # If this is already a network on your machine, this may fail ... change it here.
 VAGRANT_INT_IP = "192.168.179.%s"
 
-DEFAULT_VM_NAME = "ansible"
+DEFAULT_VM_NAME = "ansiblevagrant"
 
 
 try:
@@ -124,6 +133,9 @@ class VagrantWrapper(object):
 
         log=kwargs.setdefault('log',False)
         self.config_code=kwargs.setdefault('config_code',"\n;\n;")
+        self.share_folder=kwargs.setdefault('share_folder',".")
+        self.share_mount=kwargs.setdefault('share_mount',"/vagrant")
+        
         
         # Get a lock
         self.lock = None
@@ -187,7 +199,7 @@ class VagrantWrapper(object):
         
         return changed
              
-    def up(self, box_name, vm_name=None, count=1, box_path=None, ports=[]):    
+    def up(self, box_name, vm_name=None, count=1, box_path=None, ports=[],share_folder=None):    
         """
         Fire up a given VM and name it, using vagrant's multi-VM mode.
         """
@@ -384,6 +396,8 @@ class VagrantWrapper(object):
         d['internal_ip'] = VAGRANT_INT_IP % (255-N)
         d['forward_ports'] = []
         d['config_code'] = self.config_code
+        d['share_folder'] = self.share_folder
+        d['share_mount'] = self.share_mount
         self.vg_data['num_inst'] = N
         
         inst_array.append(d)
@@ -444,9 +458,19 @@ class VagrantWrapper(object):
                 name = d['vagrant_name']
                 ip = d['internal_ip']
                 box_name = d['box_name']
+                
                 vfile.write(VAGRANT_FILE_VM_STANZA_HEAD % 
                             (name, name, name, ip, name, box_name, name) )
+                
                 vfile.write(VAGRANT_FILE_HOSTNAME_LINE  % (name, name.replace('_','-'))  )
+
+                if self.share_folder=="":
+                    sfd='true' #share folder disabled =
+                    sf= '.' #just whatever fill it w/ something valid
+                else:
+                    sfd='false'
+                    sf=self.share_folder
+                vfile.write(VAGRANT_FILE_SYNCED_FOLDER_LINE  % (name, sf , self.share_mount , sfd ))
    
                 if d.has_key('forward_ports'):
                     for p in d['forward_ports']:
@@ -454,7 +478,8 @@ class VagrantWrapper(object):
                             vfile.write(VAGRANT_FILE_PORT_FORWARD_LINE % (name,p,(int(p)+10000)) )
                 config_code=""
                 for aline in d['config_code'].splitlines():
-                    if aline.lstrip()[0] != ';':
+                    if len(aline)==0: continue
+                    if aline.lstrip()[0] != ';': #ruby comment line
                         config_code+='\n    '
                         if 'config.' in aline:
                             config_code+=(aline.replace('config.','%s_config.')) % name
@@ -518,7 +543,10 @@ def main():
             count = dict(default='1'),
             vagrant_root = dict(default='.'),
             log=dict(default=False, choices=BOOLEANS),
-            config_code=dict(default="")
+            config_code=dict(default=""),
+            #"" for None as i'm not sure of the None behavior python  <-> json
+            share_folder=dict(default="") ,
+            share_mount=dict(default='/vagrant')
        )
    )
     
@@ -531,6 +559,8 @@ def main():
     vagrant_root = module.params.get('vagrant_root')
     log = module.boolean(module.params.get('log'))
     config_code = module.params.get('config_code')
+    share_folder = module.params.get('share_folder')
+    share_mount = module.params.get('share_mount')
 
     global VAGRANT_ROOT
     VAGRANT_ROOT = os.path.abspath(os.path.join(vagrant_root, ".vagrant"))
@@ -553,7 +583,9 @@ def main():
     count = module.params.get('count') 
  
     # Initialize vagrant
-    vgw = VagrantWrapper(log=log,config_code=config_code)
+    vgw = VagrantWrapper(log=log
+                         ,config_code=config_code
+                         ,share_folder=share_folder,share_mount=share_mount)
     
     #
     # Check if we are being invoked under an idempotency idiom of "state=present" or "state=absent"
