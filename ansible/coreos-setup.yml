@@ -5,6 +5,29 @@
   vars:
     cosc: "{{coreos_config}}"
 
+  pre_tasks:
+    - name: get nfs share path from init machine
+      delegate_to: init
+      shell: |
+        /usr/sbin/nfsstat -m | \
+        /usr/bin/grep  -o -e ':/.*' | \
+        /usr/bin/sed 's/://'
+      register: nfsp
+      changed_when: false
+    - name: get nfs share options from init machine
+      delegate_to: init
+      shell: |
+        /usr/sbin/nfsstat -m | \
+        /usr/bin/grep  -o -e 'Flags:.*' | \
+        /usr/bin/sed 's/Flags://' | \
+        /usr/bin/sed 's/\t//'
+      register: nfso
+      changed_when: false
+    - name: write nfs info to cloudconfig env file
+      template: src={{project_dir}}/config/coreos/nfs.j2
+               dest={{project_dir}}/config/coreos/nfs.env.tmp
+      
+
   roles:
     
     - role: cloudconfigwriter
