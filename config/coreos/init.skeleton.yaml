@@ -22,6 +22,14 @@ coreos:
 #  - name: fleet.service
 #  - name: etcd2.service
   - name: projectfiles.service
+    command: start
+    content: |
+      [Unit]
+      Description=stub for vagrant nfs mount
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStart=/usr/bin/ls ${PROJECT_DIR}
   - name: varlibdocker.service
     command: start
     content: |

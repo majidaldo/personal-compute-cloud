@@ -6,14 +6,12 @@ source ../../common.src #.. then find my common stuff
 #variable 'imports'
 pd="echo PROJECT_DIR=`$ENVCMD PROJECT_DIR remote`"
 pf="echo PROJECT_FILES=`$ENVCMD PROJECT_FILES remote`"
-ns="echo NFS_SHARE=`$ENVCMD NFS_SHARE`"
 
 if [ "$1" = "init" ]
 then
     ./constructor.sh master.yaml init.skeleton.yaml \
 		     <($pd) \
 		     <($pf) \
-      		     <($ns) \
 		     global.env \
 		     discovery.url.tmp \
 		     id.init.env \
@@ -23,7 +21,7 @@ then
     ./constructor.sh master.yaml compute.skeleton.yaml \
 		     <($pd) \
 		     <($fp) \
-		     <($ns) \
+		     nfs.env.tmp \
 		     global.env \
 		     discovery.url.tmp \
 		     compute.env

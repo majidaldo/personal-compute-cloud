@@ -3,3 +3,4 @@
 
 vm_name: init
 memory: 1024
+share_folder: "{{lookup('pipe',xenv+'NFS_SHARE_VAGRANT')}}"
