@@ -30,31 +30,31 @@ coreos:
       Type=oneshot
       RemainAfterExit=yes
       ExecStart=/usr/bin/ls ${PROJECT_DIR}
-  - name: varlibdocker.service
-    command: start
-    content: |
-      [Unit]
-      After=projectfiles.service
-      Requires=projectfiles.service
-      Before=docker.service
-      [Service]
-      Type=oneshot
-      RemainAfterExit=yes
-      ExecStartPre=-${PROJECT_DIR}/setup/varlibdocker.sh
-      ExecStart=/usr/bin/mountpoint -q /home/core/vld
-  - name: var-lib-docker.mount
-    command: start
-    content: |
-      [Unit]
-      Description=Mount to /var/lib/docker
-      Requires=varlibdocker.service
-      After=varlibdocker.service
-      Before=docker.service
-      [Mount]
-      #mounting /dev/varlibdocker does not work!!!!
-      What=/home/core/vld
-      Where=/var/lib/docker
-      Options=bind
+  # - name: varlibdocker.service
+  #   command: start
+  #   content: |
+  #     [Unit]
+  #     After=projectfiles.service
+  #     Requires=projectfiles.service
+  #     Before=docker.service
+  #     [Service]
+  #     Type=oneshot
+  #     RemainAfterExit=yes
+  #     ExecStartPre=-${PROJECT_DIR}/setup/varlibdocker.sh
+  #     ExecStart=/usr/bin/mountpoint -q /home/core/vld
+  # - name: var-lib-docker.mount
+  #   command: start
+  #   content: |
+  #     [Unit]
+  #     Description=Mount to /var/lib/docker
+  #     Requires=varlibdocker.service
+  #     After=varlibdocker.service
+  #     Before=docker.service
+  #     [Mount]
+  #     #mounting /dev/varlibdocker does not work!!!!
+  #     What=/home/core/vld
+  #     Where=/var/lib/docker
+  #     Options=bind
   - name: docker.service
   - name: 10-weave.network
   - name: loadregimg.service
