@@ -3,7 +3,7 @@
 source ../common.src
 export remote_projectdir=`$ENVCMD PROJECT_DIR remote`
 #                          sigh the shared folder guest pth must be abs
-export local_projectdir=`$ENVCMD NFS_SHARE`
+export local_projectdir=`$ENVCMD NFS_SHARE_VAGRANT`
 
 vagrant "$@"
 
