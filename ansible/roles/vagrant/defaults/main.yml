@@ -6,6 +6,7 @@ box_name: ubuntu/vivid64
 command: up
 vagrant_root: "{{playbook_dir}}"
 
+share_project: "false"
 
 cpus: 1
 memory: 1024
@@ -16,6 +17,12 @@ config_code: |
       vb.cpus = {{cpus}}
   end
 
-
+  
 count: 1
 vm_name: ansiblevagrant
+
+
+share_folder: "" #for no shared folders
+
+#  config.vm.synced_folder "{{lookup('pipe',xenv+'NFS_SHARE')}}", \
+share_mount:  "{{lookup('pipe',xenv+'PROJECT_DIR remote')}}"
