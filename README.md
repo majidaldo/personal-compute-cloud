@@ -47,6 +47,7 @@ Run `setup/setup.sh` from within its directory.
 - `$REGISTRY_HOST` is a variable on all machines to access the private docker registry like `docker pull $REGISTRY_HOST/myimg`.
 - Use the build script `docker/build.sh`
 - Make use of `weave` commands.
+- Make use of the file share on `/project`.
 
 
 
