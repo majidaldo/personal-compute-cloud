@@ -29,7 +29,7 @@ small print: claims of globally accessible services have not been tested. but th
 
 *Variables*
 
-Project variables are located in `.env` files in the `config/` folder. There is no immediate need for changing these variables as I tried to make everything as automatic and reasonable as possible. You may want to remove the line `control_path = /tmp` in `ansible/ansible.cfg` as it is a cygwin hack.
+Project-level variables are located in `.env` files in the `config/` folder. CoreOS-specific variables are in `config/coreos`. Ansible-specific variables are in their appropriate Ansible best practice location in `ansible/`. There is no immediate need for changing these variables as I tried to make everything as automatic and reasonable as possible. But you may want to remove the line `control_path = /tmp` in `ansible/ansible.cfg` as it is a cygwin hack. 
 
 *Dockerfiles*
 
