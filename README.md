@@ -1,6 +1,8 @@
 # CoreOS-based personal compute cloud
 personal compute cloud using [Ansible](http://www.ansible.com), [CoreOS](http://www.coreos.com),  [Docker](http://www.docker.com), [Vagrant](http://www.vagrantup.com), and [weave](http://weave.works).
 
+`git clone --recursive https://github.com/majidaldo/personal-compute-cloud.git`
+
 ## Why?
 because scientific computing [(some explanation)](http://msdresearch.blogspot.com/2015/08/personal-compute-cloud-infrastructure.html). Briefly, the goal is cater to a workflow that starts with local development, and seamlesslessly brings more compute power on demand.
 
