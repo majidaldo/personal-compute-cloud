@@ -13,7 +13,8 @@ Two types of machines are started to support the scientific computing workflow (
 - automatic building of Dockerfiles and pushing them to the registry (on boot)
 - global NFS fileshare .. no messing with sending and receiving files 
 - ssh access to machines is automatically configured.
-- future: gpu provisioning
+- future: GPU provisioning
+- future: AWS provisioning helper scripts
 
 small print: claims of globally accessible services have not been tested. but the configuration is there for it to happen.
 
@@ -42,6 +43,7 @@ Run `setup/setup.sh` from within its directory.
 ## Usage
 
 - Start up the virtual machines by running `ansible/all-local.sh` from within its directory. Now you can `ssh init` or `ssh compute-local`.
+- Provision remote CoreOS machines with Ansible. Then, in the `ansible/` directory, setup the machines with `ansible-playbook -vvvv coreos-setup.yml -e coreos_hosts=remotemachine -e coreos_config=compute`.
 - `$REGISTRY_HOST` is a variable on all machines to access the private docker registry like `docker pull $REGISTRY_HOST/myimg`.
 - Make use of `weave` commands.
 
