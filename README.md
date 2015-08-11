@@ -90,3 +90,6 @@ After setup you can `ssh ec2hostname` or `ssh vagrant` because hosts are automat
 - No claims are made as to the security (or lack there of) of this setup. Convenience (in the form of simplicity and automation) takes priority over security measures.
 - fleet and etcd, part of CoreOS, have been disabled. I don't see a use for them for the intended workflow. 
 - Given harware-assisted virtualization (enabled in virtualbox), perfomance should be close to bare-metal performance. Unfortunately, GPU passthrough (for the local compute machine) is not a simple matter (help!).
+=======
+repo for systems from https://github.com/majidaldo/personal-compute-cloud
+
