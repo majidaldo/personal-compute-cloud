@@ -46,7 +46,7 @@ Run `setup/setup.sh` from within its directory.
 
 - Start up the virtual machines by running `ansible/all-local.sh` from within its directory. Now you can `ssh init` or `ssh compute-local`.
 - Provision remote CoreOS machines with Ansible. Then, in the `ansible/` directory, setup the machines with `ansible-playbook -vvvv coreos-setup.yml -e coreos_hosts=remotemachine -e coreos_config=compute`.
-- `$REGISTRY_HOST` is a variable on all machines to access the private docker registry like `docker pull $REGISTRY_HOST/myimg`.
+- `$REGISTRY_HOST` is a variable on all machines to access the private docker registry like `docker pull $REGISTRY_HOST/mybusybox`. See note about setting up your dockerfiles in the Setup section.
 - Use the build script `docker/build.sh`
 - Make use of `weave` commands.
 - Make use of the file share on `/project`.
