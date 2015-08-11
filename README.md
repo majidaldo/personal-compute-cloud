@@ -14,7 +14,7 @@ Two types of machines are started to support the scientific computing workflow (
 - private docker registry accessible on all compute hosts (started on boot). The images in the registry persist over instantantiations of the machines as they are stored on the local file system.
 - automatic building of Dockerfiles and pushing them to the registry (on boot)
 - global NFS fileshare .. no messing with sending and receiving files 
-- ssh access to machines is automatically configured.
+- automatic configuration of ssh access
 - future: GPU provisioning
 - future: AWS provisioning helper scripts
 
