@@ -1,18 +1,22 @@
 # CoreOS-based personal compute cloud
 personal compute cloud using [Ansible](http://www.ansible.com), [CoreOS](http://www.coreos.com),  [Docker](http://www.docker.com), [Vagrant](http://www.vagrantup.com), and [weave](http://weave.works).
 
+`git clone --recursive https://github.com/majidaldo/personal-compute-cloud.git`
+
 ## Why?
-because scientific computing. link to explanation post.
+because scientific computing [(some explanation)](http://msdresearch.blogspot.com/2015/08/personal-compute-cloud-infrastructure.html). Briefly, the goal is cater to a workflow that starts with local development, and seamlesslessly brings more compute power on demand.
 
 ## What it Does
 Two types of machines are started to support the scientific computing workflow (using Docker). There is a local virtualized controller machine (called init) prividing coordination and services; and compute machines that are more ephemeral. A local compute machine is brought up for 'development'. But when a remote compute machine is acquired, it would use the same (ansible) setup script (untested). Therefore, the local compute machine is really a stand-in for a remote machine. The controller and compute machines together provide:
 
 ## Features
 - global network addressing of docker containers across clouds (thanks to weave)
-- private docker registry accessible on all compute hosts (started on boot)
+- private docker registry accessible on all compute hosts (started on boot). The images in the registry persist over instantantiations of the machines as they are stored on the local file system.
 - automatic building of Dockerfiles and pushing them to the registry (on boot)
 - global NFS fileshare .. no messing with sending and receiving files 
-- ssh access to machines is automatically configured.
+- automatic configuration of ssh access
+- future: GPU provisioning
+- future: AWS provisioning helper scripts
 
 small print: claims of globally accessible services have not been tested. but the configuration is there for it to happen.
 
@@ -27,7 +31,7 @@ small print: claims of globally accessible services have not been tested. but th
 
 *Variables*
 
-Project variables are located in `.env` files in the `config/` folder. There is no immediate need for changing these variables as I tried to make everything as automatic and reasonable as possible. You may want to remove the line `control_path = /tmp` in `ansible/ansible.cfg` as it is a cygwin hack.
+Project-level variables are located in `.env` files in the `config/` folder. CoreOS-specific variables are in `config/coreos`. Ansible-specific variables are in their appropriate Ansible best practice location in `ansible/`. There is no immediate need for changing these variables as I tried to make everything as automatic and reasonable as possible. But you may want to remove the line `control_path = /tmp` in `ansible/ansible.cfg` as it is a cygwin hack. 
 
 *Dockerfiles*
 
@@ -40,7 +44,12 @@ Run `setup/setup.sh` from within its directory.
 
 ## Usage
 
-Start up the virtual machines by running `ansible/all-local.sh` from within its directory. Now you can `ssh init` or `ssh compute-local`. `$REGISTRY_HOST` is a variable on all machines to access the private docker registry like `docker pull $REGISTRY_HOST/myimg`.
+- Start up the virtual machines by running `ansible/all-local.sh` from within its directory. Now you can `ssh init` or `ssh compute-local`.
+- Provision remote CoreOS machines with Ansible. Then, in the `ansible/` directory, setup the machines with `ansible-playbook -vvvv coreos-setup.yml -e coreos_hosts=remotemachine -e coreos_config=compute`.
+- `$REGISTRY_HOST` is a variable on all machines to access the private docker registry like `docker pull $REGISTRY_HOST/myimg`.
+- Use the build script `docker/build.sh`
+- Make use of `weave` commands.
+- Make use of the file share on `/project`.
 
 
 
