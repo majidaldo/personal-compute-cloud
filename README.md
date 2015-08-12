@@ -52,4 +52,8 @@ Run `setup/setup.sh` from within its directory.
 - Make use of the file share on `/project`.
 
 
+## Notes
+- fleet and etcd, part of CoreOS, have been disabled. I don't see a use for them for the intended workflow. 
+
+
 
