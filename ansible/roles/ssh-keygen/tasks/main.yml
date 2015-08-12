@@ -1,0 +1,10 @@
+---
+
+- shell: |
+    ssh-keygen -f ~/.ssh/personalcomputecloud \
+    -t rsa -b 4096 \
+    -C "personalcomputecloud" \
+    -N ''
+  args:
+    creates: ~/.ssh/personalcomputecloud
+        #and ~/.ssh/personalcomputecloud.pub
