@@ -31,10 +31,11 @@ fi
 thisdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd $thisdir
 
-
+touch .private
 #cool syntax:  cmdthattakesfilearg <( cmdthatprints )
 #..but  the following only works in bash
 source <(./compose_env.sh \
+	   .private \
 	   <(echo PROJECT_DIR=$(./project_dir.env.sh $rorl $3 )) \
 	   project.env \
 	   coreos/global.env \
