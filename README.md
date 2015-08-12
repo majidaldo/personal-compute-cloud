@@ -1,5 +1,5 @@
 # CoreOS-based personal compute cloud
-personal compute cloud using [Ansible](http://www.ansible.com), [CoreOS](http://www.coreos.com),  [Docker](http://www.docker.com), [Vagrant](http://www.vagrantup.com), and [weave](http://weave.works).
+personal compute cloud using [Ansible](http://www.ansible.com), [CoreOS](http://www.coreos.com),  [Docker](http://www.docker.com), [Vagrant](http://www.vagrantup.com), [Virtualbox](https://www.virtualbox.org), and [weave](http://weave.works).
 
 `git clone --recursive https://github.com/majidaldo/personal-compute-cloud.git`
 
@@ -54,6 +54,7 @@ Run `setup/setup.sh` from within its directory.
 
 ## Notes
 - fleet and etcd, part of CoreOS, have been disabled. I don't see a use for them for the intended workflow. 
+- given harware-assisted virtualization (enabled in virtualbox), perfomance should be close to bare-metal performance. Unfortunately, GPU passthrough (for the local compute machine) is not a simple matter (help!).
 
 
 
