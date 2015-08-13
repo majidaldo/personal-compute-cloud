@@ -39,7 +39,15 @@
         from_port: 6783
         to_port: 6783
         cidr_ip: 0.0.0.0/0
+    rules_egress:
+      #all outbound passes
+      - proto: all
+        from_port: -1
+        to_port: -1
+        cidr_ip: 0.0.0.0/0
       #that's it!
+    purge_rules: true
+    purge_rules_egress: true
       
   
   
