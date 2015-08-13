@@ -15,10 +15,10 @@
 - name: create security (firewall stuff) group
   ec2_group:
     description: coreos security
-    name: personalcomputecloud
-    region: '{{region}}'
     aws_access_key: '{{aws_access_key}}'
     aws_secret_key: '{{aws_secret_access_key}}'
+    name: personalcomputecloud
+    region: '{{region}}'
     rules:
       #ssh of course
       - proto: tcp
@@ -38,4 +38,4 @@
       
   
   
-#ami ids https://coreos.com/os/docs/latest/booting-on-ec2.html
+
