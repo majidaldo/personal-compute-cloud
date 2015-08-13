@@ -1,5 +1,5 @@
 # CoreOS-based personal compute cloud
-personal compute cloud using [Ansible](http://www.ansible.com), [CoreOS](http://www.coreos.com),  [Docker](http://www.docker.com), [Vagrant](http://www.vagrantup.com), and [weave](http://weave.works).
+personal compute cloud using [Ansible](http://www.ansible.com), [CoreOS](http://www.coreos.com),  [Docker](http://www.docker.com), [Vagrant](http://www.vagrantup.com), [Virtualbox](https://www.virtualbox.org), and [weave](http://weave.works).
 
 `git clone --recursive https://github.com/majidaldo/personal-compute-cloud.git`
 
@@ -46,10 +46,17 @@ Run `setup/setup.sh` from within its directory.
 
 - Start up the virtual machines by running `ansible/all-local.sh` from within its directory. Now you can `ssh init` or `ssh compute-local`.
 - Provision remote CoreOS machines with Ansible. Then, in the `ansible/` directory, setup the machines with `ansible-playbook -vvvv coreos-setup.yml -e coreos_hosts=remotemachine -e coreos_config=compute`.
-- `$REGISTRY_HOST` is a variable on all machines to access the private docker registry like `docker pull $REGISTRY_HOST/myimg`.
-- Use the build script `docker/build.sh`
+- `$REGISTRY_HOST` is a variable on all machines to access the private docker registry like `docker pull $REGISTRY_HOST/mybusybox`. See note about setting up your dockerfiles in the Setup section.
+- Use the build script `docker/build.sh` to iterate on your dockerfiles.
 - Make use of `weave` commands.
 - Make use of the file share on `/project`.
+- `cd` into `ansible/.vagrant` to issue `vagrant` commands
+
+
+## Notes
+- No claims are made as to the security (or lack there of) of this setup. Convenience (in the form of simplicity and automation) takes priority over security measures.
+- fleet and etcd, part of CoreOS, have been disabled. I don't see a use for them for the intended workflow. 
+- Given harware-assisted virtualization (enabled in virtualbox), perfomance should be close to bare-metal performance. Unfortunately, GPU passthrough (for the local compute machine) is not a simple matter (help!).
 
 
 
