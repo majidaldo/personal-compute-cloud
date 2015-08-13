@@ -1,0 +1,17 @@
+---
+
+
+- name: create ec2 key pair
+  ec2_key:
+    aws_access_key: '{{aws_access_key}}'
+    aws_secret_key: '{{aws_secret_access_key}}' 
+    name: personalcomputecloud
+    key_material: "{{ item }}"
+    state: present
+    region: '{{region}}'
+  with_file: ~/.ssh/personalcomputecloud.pub
+
+   
+
+
+#ami ids https://coreos.com/os/docs/latest/booting-on-ec2.html
