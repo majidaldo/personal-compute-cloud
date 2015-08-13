@@ -1,6 +1,8 @@
 localhost ansible_connection=local
 
-[coreos]
-init
-compute-local
-#compute-local-inst[0:9]
+[vagrant]
+[ec2]
+
+[coreos:children]
+vagrant
+ec2
