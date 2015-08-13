@@ -8,3 +8,5 @@
   args:
     creates: ~/.ssh/personalcomputecloud
         #and ~/.ssh/personalcomputecloud.pub
+
+- file: path=~/.ssh/personalcomputecloud mode=700
