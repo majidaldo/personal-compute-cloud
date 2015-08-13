@@ -1,7 +1,7 @@
 ---
 
 
-- name: create ec2 key pair
+- name: create key pair
   ec2_key:
     aws_access_key: '{{aws_access_key}}'
     aws_secret_key: '{{aws_secret_access_key}}' 
@@ -11,7 +11,31 @@
     region: '{{region}}'
   with_file: ~/.ssh/personalcomputecloud.pub
 
-   
 
-
+- name: create security (firewall stuff) group
+  ec2_group:
+    description: coreos security
+    name: personalcomputecloud
+    region: '{{region}}'
+    aws_access_key: '{{aws_access_key}}'
+    aws_secret_key: '{{aws_secret_access_key}}'
+    rules:
+      #ssh of course
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+      #weave
+      - proto: tcp
+        from_port: 6783
+        to_port: 6783
+        cidr_ip: 0.0.0.0/0
+      - proto: udp
+        from_port: 6783
+        to_port: 6783
+        cidr_ip: 0.0.0.0/0
+      #that's it!
+      
+  
+  
 #ami ids https://coreos.com/os/docs/latest/booting-on-ec2.html
