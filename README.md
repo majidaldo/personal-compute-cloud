@@ -50,6 +50,7 @@ Run `setup/setup.sh` from within its directory.
 - Use the build script `docker/build.sh` to iterate on your dockerfiles.
 - Make use of `weave` commands.
 - Make use of the file share on `/project`.
+- `cd` into `ansible/.vagrant` to issue `vagrant` commands
 
 
 ## Notes
