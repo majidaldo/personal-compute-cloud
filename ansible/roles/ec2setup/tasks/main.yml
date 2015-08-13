@@ -20,6 +20,11 @@
     name: personalcomputecloud
     region: '{{region}}'
     rules:
+      #ping
+      - proto: icmp
+        from_port: -1
+        to_port: -1
+        cidr_ip: 0.0.0.0/0
       #ssh of course
       - proto: tcp
         from_port: 22
