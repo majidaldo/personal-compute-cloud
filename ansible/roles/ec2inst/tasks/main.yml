@@ -1,0 +1,29 @@
+---
+
+- name: provision ec2 instances
+  ec2:
+    aws_access_key: '{{aws_access_key}}'
+    aws_secret_key: '{{aws_secret_access_key}}'
+    key_name: personalcomputecloud
+    image: '{{image}}'
+    #state: '{{state}}' params exact_count and state are mutually exclu??
+    group: personalcomputecloud
+    region: '{{region}}'
+    instance_type: "{{instance_type}}"
+    instance_tags:
+      Name: pcc-compute
+    exact_count: '{{count}}'
+    count_tag:
+      Name: pcc-compute
+    wait: yes #have to to get the info
+  register: ec2
+
+
+- name: wait for instance to show up in inventory
+  shell: '{{inventory_dir}}/ec2.sh --list'
+  register: ec2i
+  until: ec2i.stdout.find(item.public_dns_name) != -1
+  with_items: ec2.instances
+  retries: 30
+  delay: 10
+  

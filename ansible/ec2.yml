@@ -1,0 +1,12 @@
+---
+
+- hosts: localhost
+  gather_facts: false
+  
+ 
+  roles:
+    - role: ec2inst #ec2setup
+      #state: present #absent not working
+
+        
+ #http://docs.ansible.com/ansible/ec2_module.html
