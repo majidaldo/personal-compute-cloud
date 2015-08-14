@@ -1,5 +1,21 @@
 ---
 
+# config ssh access first thing
+- hosts: '{{coreos_hosts}}'
+  gather_facts: false
+  tasks:
+    - name: add host to grp to configure ssh
+      add_host: hostname={{inventory_hostname}}
+                groups=to_ssh_config
+- hosts: localhost
+  gather_facts: true
+  roles:
+    - role: ssh_config
+      ssh_config_hosts: '{{groups.to_ssh_config}}'
+      host_key_checking: false
+
+
+
 - hosts: localhost
   gather_facts: false
   vars:
@@ -131,5 +147,5 @@
       service: name=projectfiles.service state=started
       become: yes
       become_method: sudo
-      
- 
+
+
