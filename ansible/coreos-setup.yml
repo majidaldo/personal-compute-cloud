@@ -4,9 +4,14 @@
 - hosts: '{{coreos_hosts}}'
   gather_facts: false
   tasks:
-    - name: add host to grp to configure ssh
+    - name: add host to coreos grp
       add_host: hostname={{inventory_hostname}}
-                groups=to_ssh_config
+                groups=coreos
+    - name: add host to grp to configure ssh
+      add_host:
+        hostname: '{{inventory_hostname}}'
+        ansible_ssh_user:  '{{ansible_ssh_user}}'
+        groups: to_ssh_config
 - hosts: localhost
   gather_facts: true
   roles:
@@ -59,10 +64,6 @@
   gather_facts: false
 
   pre_tasks:
-
-    - name: add host to coreos grp
-      add_host: hostname={{inventory_hostname}}
-                groups=coreos
     
     - name: get outward-facing ip #really just for vagrant machines
       shell: "python -c \"import socket; print socket.gethostbyname('{{inventory_hostname}}')\""
