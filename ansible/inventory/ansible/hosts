@@ -6,3 +6,10 @@ localhost ansible_connection=local
 [coreos:children]
 vagrant
 ec2
+
+
+[compute]
+compute-local
+
+[compute:children]
+ec2
