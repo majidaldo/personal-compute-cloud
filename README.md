@@ -51,7 +51,7 @@ Run [`setup/setup.sh`](setup/setup.sh) from within its directory.
 Then aquire the machines with the provided ansible playooks with any of the following providers.
 
 #### Vagrant
-Start machine: `ansible-playbook vagrant.yml`. Now you can `ssh vagrant`. 
+Start machine: `ansible-playbook vagrant.yml`.
 
 #### EC2 (suggested method)
 
@@ -60,11 +60,13 @@ Setup your EC2 account. Add the following substituting your credientials to `con
 AWS_ACCESS_KEY_ID='mykeyid'
 AWS_SECRET_ACCESS_KEY='mykey'
 ```
-Start machine: `ansible-playbook ec2.yml`. Now you can `ssh ec2-something`. To get a GPU machine: `ansible-playbook ec2.yml -e type=gpu`  (useless now).
+Start machine: `ansible-playbook ec2.yml`. To get a GPU machine: `ansible-playbook ec2.yml -e type=gpu`  (useless now).
 
 ### Compute Machine Setup
 
 After getting the machines, set them up: `ansible-playbook -vvvv setup.yml -e hosts=ansiblepattern`. [`ansiblepattern`](http://docs.ansible.com/ansible/intro_patterns.html) is usually going to be the provider name. You can also use any of the groups defined in [`ansible/inventory/ansible/hosts`](ansible/inventory/ansible/hosts).
+
+After setup you can `ssh ec2-something` or `ssh vagrant`
 
 ### Misc
 - Shortcut local machine setup: [ansible/all-local.sh](ansible/all-local.sh). Sets up init machine and a (local) vagrant compute machine.
