@@ -19,11 +19,8 @@
       count:         "{{cnt}}"
       region:        "{{rgn}}"
       image:         "{{img}}"
-      #state: present #absent not working
 
 
-#todo: can i set count to 0? will it terminate running insts? ans: yes!
-#todo: have it skip  chking inventory when count is 0
 
 #http://docs.ansible.com/ansible/ec2_module.html
  
