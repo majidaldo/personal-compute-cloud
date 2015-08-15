@@ -66,7 +66,7 @@ Start machine: `ansible-playbook ec2.yml`. To get a GPU machine: `ansible-playbo
 
 After getting the machines, set them up: `ansible-playbook -vvvv setup.yml -e hosts=ansiblepattern`. [`ansiblepattern`](http://docs.ansible.com/ansible/intro_patterns.html) is usually going to be the provider name. You can also use any of the groups defined in [`ansible/inventory/ansible/hosts`](ansible/inventory/ansible/hosts).
 
-After setup you can `ssh ec2-something` or `ssh vagrant`
+After setup you can `ssh ec2hostname` or `ssh vagrant`. Furthermore, hosts are aliased with a prefix made of a group name followed by a hypen. So, `ssh cpu-vagrant` or `ssh ec2-someec2hostt` will work since there are groups for providers (eg. vagrant or ec2) and compute type (cpu or gpu).
 
 ### Misc
 - Shortcut local machine setup: [ansible/all-local.sh](ansible/all-local.sh). Sets up init machine and a (local) vagrant compute machine.
