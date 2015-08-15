@@ -5,3 +5,7 @@ image: ami-6375d808 #associated with us-east-1 and instance type
 instance_type: t2.micro
 count: 1
 state: absent
+name: pcc-compute # hopfully it's unique
+region: us-east-1
+
+

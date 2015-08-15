@@ -2,11 +2,28 @@
 
 - hosts: localhost
   gather_facts: false
-  
- 
+  vars:
+    typ: "{{ type | default('compute') }}" #typ b/c recursion error!
+  pre_tasks:
+    - name: get ec2_vars
+      include_vars: '{{playbook_dir}}/roles/ec2inst/vars/main.yml'
+    - set_fact:
+        cnt:  "{{ count  | default(ec2_vars.defaults.count) }}"
+        rgn: "{{ region | default(ec2_vars.defaults.region)}}"
+        img:  "{{ image  | default(ec2_vars[ec2_vars.defaults.region].image)}}"
+
   roles:
-    - role: ec2inst #ec2setup
+    - role: ec2inst
+      name:          "{{ ec2_vars.defaults.name+'-'+typ }}"
+      instance_type: "{{ ec2_vars.type[typ] | default(ec2_vars.defaults.type) }}"
+      count:         "{{cnt}}"
+      region:        "{{rgn}}"
+      image:         "{{img}}"
       #state: present #absent not working
 
-        
- #http://docs.ansible.com/ansible/ec2_module.html
+
+#todo: can i set count to 0? will it terminate running insts? ans: yes!
+#todo: have it skip  chking inventory when count is 0
+
+#http://docs.ansible.com/ansible/ec2_module.html
+ 

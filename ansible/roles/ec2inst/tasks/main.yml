@@ -1,5 +1,6 @@
 ---
 
+
 - name: provision ec2 instances
   ec2:
     aws_access_key: '{{aws_access_key}}'
@@ -11,12 +12,12 @@
     region: '{{region}}'
     instance_type: "{{instance_type}}"
     instance_tags:
-      Name: pcc-compute
+      Name: '{{name}}'
     exact_count: '{{count}}'
     count_tag:
-      Name: pcc-compute
-    wait: yes #have to to get the info
-  register: ec2
+      Name: '{{name}}'
+    wait: yes #have to to get the info...
+  register: ec2 #...or nothing will show up in ec2
 
 
 - name: wait for instance to show up in inventory
