@@ -44,7 +44,7 @@ Run [`setup/setup.sh`](setup/setup.sh) from within its directory.
 
 ## Usage
 
-cd into [`ansible`](ansible). Start the init machine: `ansible-playbook init.yml`. Now you can `ssh init`.
+`cd ansible`. Start the init machine: `ansible-playbook init.yml`. Now you can `ssh init`.
 
 ### Compute Provisioning
 
