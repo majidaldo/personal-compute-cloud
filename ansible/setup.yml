@@ -15,8 +15,10 @@
 - hosts: localhost
   gather_facts: true
   roles:
+    #todo: problem: passing hosts=cpu does not get ec2 ones!
     - role: ssh_config
-      ssh_config_hosts: '{{groups.to_ssh_config}}'
+      ssh_config_hosts: "{{groups.to_ssh_config | default('localhost')}}"
+      #in case no matched hosts. localhost is discarded by role
       host_key_checking: false
 
 
