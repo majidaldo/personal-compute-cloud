@@ -21,30 +21,30 @@ Two types of machines are started to support the scientific computing workflow (
 ## Prerequisites
 
 - Linux: duh. windows users can use  (plain) [`cygwin`](http://www.cygwin.com). but i prefer [`babun`](http://babun.github.io). 
-- Ansible: tested with 1.9. works on windows with cygwin with `setup/cygwin/install-myansible.sh`
+- Ansible: tested with 1.9. works on windows with cygwin with [`setup/cygwin/install-myansible.sh`](setup/cygwin/install-myansible.sh)
 - python-vagrant
-- Vagrant: windows users should install vagrant-winnfsd (see `setup/install-vagrant.bat`). Kill the winnfs.exe process if you have nfs mounting issues
+- Vagrant: windows users should install vagrant-winnfsd (see [`setup/install-vagrant.bat`](setup/install-vagrant.bat)). Kill the winnfs.exe process if you have nfs mounting issues
 
 ## Setup
 
 *Variables*
 
-Project-level variables are located in `.env` files in the `config/` folder. CoreOS-specific variables are in `config/coreos`. Ansible-specific variables are in their appropriate Ansible best practice location in `ansible/`. There is no immediate need for changing these variables as I tried to make everything as automatic and reasonable as possible.
+Project-level variables are located in `.env` files in the [`config/`](config/) folder. CoreOS-specific variables are in `config/coreos`. Ansible-specific variables are in their appropriate Ansible best practice location in [`ansible/`](ansible). There is no immediate need for changing these variables as I tried to make everything as automatic and reasonable as possible.
 
-Exceptions: You may want to remove the line `control_path = /tmp` in `ansible/ansible.cfg` as it is a cygwin hack. Also,  NFS mount options can be overriden by specifiying `NFS_OPTS` in `config/coreos/global.env` if you are having trouble with NFS mounting (an attempt is made to automatically set them). On a related note, `NFS_SERVER` in `config/coreos/init.env` is hard-coded to correspond with `VAGRANT_INT_IP` in `ansible/library/vagrant`. Change as needed.
+Exceptions: You may want to remove the line `control_path = /tmp` in [`ansible/ansible.cfg`](ansible/ansible.cfg) as it is a cygwin hack. Also,  NFS mount options can be overriden by specifiying `NFS_OPTS` in [`config/coreos/global.env`](config/coreos/global.env) if you are having trouble with NFS mounting (an attempt is made to automatically set them). On a related note, `NFS_SERVER` in [`config/coreos/init.env`](config/coreos/init.env) is hard-coded to correspond with `VAGRANT_INT_IP` in [`ansible/library/vagrant`](ansible/library/vagrant). Change as needed.
 
 *Dockerfiles*
 
-So all you have to do is add your Dockerfiles in the `docker/` folder like `docker/999-mybusybox`. The build script will only build folders that start with an number followed by a hyphen, in order. Make use of this behavior to satisfy Docker image dependencies.
+So all you have to do is add your Dockerfiles in the [`docker/`](docker/) folder like [`docker/999-mybusybox`](docker/999-mybusybox). The build script will only build folders that start with an number followed by a hyphen, in order. Make use of this behavior to satisfy Docker image dependencies.
 
 *Initialization*
 
-Run `setup/setup.sh` from within its directory.
+Run [`setup/setup.sh`](setup/setup.sh) from within its directory.
 
 
 ## Usage
 
-cd into `ansible`. Start the init machine: `ansible-playbook init.yml`. Now you can `ssh init`.
+cd into [`ansible`](ansible). Start the init machine: `ansible-playbook init.yml`. Now you can `ssh init`.
 
 ### Compute Provisioning
 
@@ -64,10 +64,10 @@ Start machine: `ansible-playbook ec2.yml`. Now you can `ssh ec2-something`. To g
 
 ### Compute Machine Setup
 
-After getting the machines, set them up: `ansible-playbook -vvvv setup.yml -e hosts=ansiblepattern`. [`ansiblepattern`](http://docs.ansible.com/ansible/intro_patterns.html) is usually going to be the provider name. You can also use any of the groups defined in `ansible/inventory/ansible/hosts`.
+After getting the machines, set them up: `ansible-playbook -vvvv setup.yml -e hosts=ansiblepattern`. [`ansiblepattern`](http://docs.ansible.com/ansible/intro_patterns.html) is usually going to be the provider name. You can also use any of the groups defined in [`ansible/inventory/ansible/hosts`](ansible/inventory/ansible/hosts).
 
 ### Misc
-- Shortcut local machine setup: [ansible/all-local.sh](ansible/all-local.sh).
+- Shortcut local machine setup: [ansible/all-local.sh](ansible/all-local.sh). Sets up init machine and a (local) vagrant compute machine.
 - `ansible/destroy-acomputeprovider.sh` to decommision its hosts.
 - `$REGISTRY_HOST` is a variable on all machines to access the private docker registry like `docker pull $REGISTRY_HOST/mybusybox`. See note about setting up your dockerfiles in the Setup section.
 - Use the build script `docker/build.sh` to iterate on your dockerfiles.
