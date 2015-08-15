@@ -3,13 +3,18 @@ localhost ansible_connection=local
 [vagrant]
 [ec2]
 
+
+[coreos]
+init
+
 [coreos:children]
 vagrant
 ec2
 
 
 [compute]
-compute-local
-
 [compute:children]
 ec2
+vagrant
+
+[gpu]

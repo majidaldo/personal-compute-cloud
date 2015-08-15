@@ -1,7 +1,7 @@
 ---
 
 # config ssh access first thing
-- hosts: '{{coreos_hosts}}'
+- hosts: '{{hosts}}'
   gather_facts: false
   tasks:
     - name: add host to coreos grp
@@ -24,7 +24,7 @@
 - hosts: localhost
   gather_facts: false
   vars:
-    cosc: "{{coreos_config}}"
+    cosc: compute #coreos_config
 
   pre_tasks:
     - name: get nfs share path from init machine
@@ -56,11 +56,11 @@
     
     - role: cloudconfigwriter
       write_cconfig_pth: "{{playbook_dir}}/roles/coreos-cloudconfig/templates/{{cosc}}.tmp"
-      cconfig: "{{cosc}}"
+      cconfig: compute #coreos_config
 
 
 
-- hosts: "{{coreos_hosts}}"
+- hosts: "{{hosts}}"
   gather_facts: false
 
   pre_tasks:
@@ -80,7 +80,7 @@
     
     - role: coreos-bootstrap
     - role: coreos-cloudconfig
-      cconfig: "{{coreos_config}}"
+      cconfig: compute # coreos_config
       public_ip: "{{pubip.stdout}}"
       
   tasks:

@@ -4,6 +4,6 @@
   gather_facts: false
 
   roles:
-    - role: compute-local
+    - role: vagrant-compute
       count: 1
 

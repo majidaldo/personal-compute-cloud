@@ -22,6 +22,7 @@ def list_running_hosts():
     hosts = []
     for line in status.split('\n'):
         (_, host, key, value) = line.split('\r')[0].split('\n')[0].split(',')
+        if host=='init': continue
         if key == 'state' and value == 'running':
             hosts.append(host.replace('_','-'))
     return hosts
