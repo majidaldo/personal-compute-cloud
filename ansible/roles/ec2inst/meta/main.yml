@@ -2,3 +2,4 @@
 
 dependencies:
   - role: ec2setup
+    when: count|int > 0
