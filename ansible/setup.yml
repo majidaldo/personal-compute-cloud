@@ -7,22 +7,21 @@
     - name: add host to coreos grp
       add_host: hostname={{inventory_hostname}}
                 groups=coreos
-    - name: add host to grp to configure ssh
-      add_host:
-        hostname: '{{inventory_hostname}}'
-        groups: to_ssh_config
     - name: make host names out of groups
       add_host:
         name: "{{item+'-'+inventory_hostname}}"
-        groups: to_ssh_config
+        ansible_ssh_host: '{{inventory_hostname}}'
+        ansible_ssh_port: "{{ansible_ssh_port | default('22') }}"
+        ansible_ssh_private_key_file: "{{ansible_ssh_private_key_file}}"
+        groups: coreos
       with_items: '{{group_names}}'
-        
+      
 - hosts: localhost
   gather_facts: true
   roles:
     #todo: problem: passing hosts=cpu does not get ec2 ones!
     - role: ssh_config
-      ssh_config_hosts: "{{groups.to_ssh_config | default('localhost')}}"
+      ssh_config_hosts: "{{groups.coreos | default('localhost')}}"
       #in case no matched hosts. localhost is discarded by role
       host_key_checking: false
 
