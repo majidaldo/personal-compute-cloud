@@ -64,9 +64,10 @@ Start machine: `ansible-playbook ec2.yml`. Now you can `ssh ec2-something`. To g
 
 ### Compute Machine Setup
 
-- After getting the machines, set them up: `ansible-playbook -vvvv setup.yml -e hosts=ansiblepattern`. [`ansiblepattern`](http://docs.ansible.com/ansible/intro_patterns.html) is usually going to be the provider name. You can also use any of the groups defined in `ansible/inventory/ansible/hosts`.
+After getting the machines, set them up: `ansible-playbook -vvvv setup.yml -e hosts=ansiblepattern`. [`ansiblepattern`](http://docs.ansible.com/ansible/intro_patterns.html) is usually going to be the provider name. You can also use any of the groups defined in `ansible/inventory/ansible/hosts`.
 
-- Shortcut local machine setup: `ansible/all-local.sh`.
+### Misc
+- Shortcut local machine setup: [ansible/all-local.sh](ansible/all-local.sh).
 - `ansible/destroy-acomputeprovider.sh` to decommision its hosts.
 - `$REGISTRY_HOST` is a variable on all machines to access the private docker registry like `docker pull $REGISTRY_HOST/mybusybox`. See note about setting up your dockerfiles in the Setup section.
 - Use the build script `docker/build.sh` to iterate on your dockerfiles.
