@@ -7,7 +7,7 @@ personal compute cloud using [Ansible](http://www.ansible.com), [CoreOS](http://
 because scientific computing [(some explanation)](http://msdresearch.blogspot.com/2015/08/personal-compute-cloud-infrastructure.html). Briefly, the goal is cater to a workflow that starts with local development, and seamlesslessly brings more compute power on demand.
 
 ## What it Does
-Two types of machines are started to support the scientific computing workflow (using Docker). There is a local virtualized controller machine (called init) prividing coordination and services; and compute machines that are more ephemeral. A local compute machine is brought up for 'development'. But when a remote compute machine is acquired, it would use the same (ansible) setup script (untested). Therefore, the local compute machine is really a stand-in for a remote machine. The controller and compute machines together provide:
+Two types of machines are started to support the scientific computing workflow (using Docker). There is a local virtualized controller machine (called init) prividing coordination and services; and compute machines that are more ephemeral. A local compute machine is brought up for 'development'. But when a remote compute machine is acquired, it would use the same (ansible) setup script. Therefore, the local compute machine is really a stand-in for a remote machine. The controller and compute machines together provide:
 
 ## Features
 - global network addressing of docker containers across clouds (thanks to weave)
@@ -16,22 +16,22 @@ Two types of machines are started to support the scientific computing workflow (
 - global NFS fileshare .. no messing with sending and receiving files 
 - automatic configuration of ssh access
 - future: GPU provisioning
-- future: AWS provisioning helper scripts
 
-small print: claims of globally accessible services have not been tested. but the configuration is there for it to happen.
 
 ## Prerequisites
 
 - Linux: duh. windows users can use  (plain) [`cygwin`](http://www.cygwin.com). but i prefer [`babun`](http://babun.github.io). 
 - Ansible: tested with 1.9. works on windows with cygwin with `setup/cygwin/install-myansible.sh`
 - python-vagrant
-- Vagrant: windows users should install vagrant-winnfsd setup/install-vagrant.bat. kill the winnfs.exe process if you have nfs mounting issues
+- Vagrant: windows users should install vagrant-winnfsd (see `setup/install-vagrant.bat`). Kill the winnfs.exe process if you have nfs mounting issues
 
 ## Setup
 
 *Variables*
 
-Project-level variables are located in `.env` files in the `config/` folder. CoreOS-specific variables are in `config/coreos`. Ansible-specific variables are in their appropriate Ansible best practice location in `ansible/`. There is no immediate need for changing these variables as I tried to make everything as automatic and reasonable as possible. But you may want to remove the line `control_path = /tmp` in `ansible/ansible.cfg` as it is a cygwin hack. 
+Project-level variables are located in `.env` files in the `config/` folder. CoreOS-specific variables are in `config/coreos`. Ansible-specific variables are in their appropriate Ansible best practice location in `ansible/`. There is no immediate need for changing these variables as I tried to make everything as automatic and reasonable as possible.
+
+Exceptions: You may want to remove the line `control_path = /tmp` in `ansible/ansible.cfg` as it is a cygwin hack. Also,  NFS mount options can be overriden by specifiying `NFS_OPTS` in `config/coreos/global.env` if you are having trouble with NFS mounting (an attempt is made to automatically set them). On a related note, `NFS_SERVER` in `config/coreos/init.env` is hard-coded to correspond with `VAGRANT_INT_IP` in `ansible/library/vagrant`. Change as needed.
 
 *Dockerfiles*
 
@@ -44,13 +44,35 @@ Run `setup/setup.sh` from within its directory.
 
 ## Usage
 
-- Start up the virtual machines by running `ansible/all-local.sh` from within its directory. Now you can `ssh init` or `ssh compute-local`.
-- Provision remote CoreOS machines with Ansible. Then, in the `ansible/` directory, setup the machines with `ansible-playbook -vvvv setup.yml -e hosts=remotemachine_ansiblepattern`.
+cd into `ansible`. Start the init machine: `ansible-playbook init.yml`. Now you can `ssh init`.
+
+### Compute Provisioning
+
+Then aquire the machines with the provided ansible playooks with any of the following providers.
+
+#### Vagrant
+Start machine: `ansible-playbook vagrant.yml`. Now you can `ssh vagrant`. 
+
+#### EC2 (suggested method)
+
+Setup your EC2 account. Add the following substituting your credientials to `config/.private`
+```
+AWS_ACCESS_KEY_ID='mykeyid'
+AWS_SECRET_ACCESS_KEY='mykey'
+```
+Start machine: `ansible-playbook ec2.yml`. Now you can `ssh ec2-something`. To get a GPU machine: `ansible-playbook ec2.yml -e type=gpu`  (useless now).
+
+### Compute Machine Setup
+
+- After getting the machines, set them up: `ansible-playbook -vvvv setup.yml -e hosts=ansiblepattern`. [`ansiblepattern`](http://docs.ansible.com/ansible/intro_patterns.html) is usually going to be the provider name. You can also use any of the groups defined in `ansible/inventory/ansible/hosts`.
+
+- Shortcut local machine setup: `ansible/all-local.sh`.
+- `ansible/destroy-acomputeprovider.sh` to decommision its hosts.
 - `$REGISTRY_HOST` is a variable on all machines to access the private docker registry like `docker pull $REGISTRY_HOST/mybusybox`. See note about setting up your dockerfiles in the Setup section.
 - Use the build script `docker/build.sh` to iterate on your dockerfiles.
 - Make use of `weave` commands.
 - Make use of the file share on `/project`.
-- `cd` into `ansible/.vagrant` to issue `vagrant` commands
+- `cd` into `ansible/.vagrant` to issue `vagrant` commands on the local machine.
 
 
 ## Notes
