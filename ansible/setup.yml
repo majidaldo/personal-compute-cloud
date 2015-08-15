@@ -10,8 +10,13 @@
     - name: add host to grp to configure ssh
       add_host:
         hostname: '{{inventory_hostname}}'
-        ansible_ssh_user:  '{{ansible_ssh_user}}'
         groups: to_ssh_config
+    - name: make host names out of groups
+      add_host:
+        name: "{{item+'-'+inventory_hostname}}"
+        groups: to_ssh_config
+      with_items: '{{group_names}}'
+        
 - hosts: localhost
   gather_facts: true
   roles:
