@@ -1,20 +1,33 @@
 localhost ansible_connection=local
 
+[coreos]
+init
+
+
+#computation computers are either compute(cpu) or gpu
+
+[compute]
+[gpu]
+
+
+
+#providers.
+#todo: are there any variables that mean: all inventory grps?
+
 [vagrant]
 [ec2]
 
 
-[coreos]
-init
+#depending on dynamic inventory for this
 
+[compute:children]
+ec2
+#todo: in the distant future, maybe i can get vagrant to pass thru gpu
+vagrant
+[gpu:children]
+#fill in
+
+#finally, everything that computes is coreos
 [coreos:children]
 vagrant
 ec2
-
-
-[compute]
-[compute:children]
-ec2
-vagrant
-
-[gpu]
