@@ -1,6 +1,7 @@
 ---
 
-- shell: |
+- name: generate ssh key personalcomputecloud
+  shell: |
     ssh-keygen -f ~/.ssh/personalcomputecloud \
     -t rsa -b 4096 \
     -C "personalcomputecloud" \
