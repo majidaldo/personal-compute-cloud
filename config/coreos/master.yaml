@@ -278,7 +278,7 @@ coreos:
         Type=oneshot
         RemainAfterExit=yes
         EnvironmentFile=/home/core/sys.env
-        ExecStartPre=-/usr/bin/mkdir ${PROJECT_DIR}
+        ExecStartPre=-/usr/bin/mkdir -p ${PROJECT_DIR}
         ExecStart=/usr/bin/mount -v -o ${NFS_OPTS} \
         ${NFS_SERVER}:${NFS_SHARE} ${PROJECT_DIR}
         ExecStop=/usr/bin/umount ${PROJECT_DIR}
