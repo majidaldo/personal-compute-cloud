@@ -2,6 +2,17 @@
 
 #cloud-config
 
+write_files:
+- path: /home/core/sys.env
+- path: /etc/profile.d/sys_env.sh
+  #todo: make a compute-local config that uses the insecure reg w/ mirr
+  #since it's best to get imgs locally
+  #and a compute-remote config that doesn't use mirr
+- path: /etc/systemd/system/docker.service.d/50-insecure-registry-mirr.conf
+- path: /home/core/waitforfile.sh
+
+
+
 
 coreos:
   
@@ -38,13 +49,17 @@ coreos:
     command: stop
   - name: projectfiles.service
     command: stop
+  - name: keepnfsalive.service
+    #todo: why do i have to do this?!?! iptables issue??
+    command: stop
+    content: |
+      [Unit]
+      Description=hack for keeing nfs connection
+      After=   projectfiles.service
+      Requires=projectfiles.service
+      [Service]
+      ExecStartPre=/usr/bin/mkdir -p ${PROJECT_DIR}
+      ExecStartPre=/home/core/waitforfile.sh ${PROJECT_DIR}/root.dir
+      ExecStart=/usr/bin/sh -c 'cd ${PROJECT_DIR};  \
+      while true; do /usr/bin/ls; sleep 10; done'
     
-write_files:
-- path: /home/core/sys.env
-- path: /etc/profile.d/sys_env.sh
-  #todo: make a compute-local config that uses the insecure reg w/ mirr
-  #since it's best to get imgs locally
-  #and a compute-remote config that doesn't use mirr
-- path: /etc/systemd/system/docker.service.d/50-insecure-registry-mirr.conf
-- path: /home/core/waitforfile.sh
-

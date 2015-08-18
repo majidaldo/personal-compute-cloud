@@ -41,7 +41,7 @@
         /usr/bin/sed 's/://'
       register: nfsp
       changed_when: false
-    - name: get nfs share options from init machine
+    - name: get nfs share options from init machine # not really
       delegate_to: init
       shell: |
         nv=$(/usr/sbin/nfsstat -m                  |    \
@@ -50,7 +50,7 @@
         /usr/bin/sed 's/\t//'                      |    \
         /usr/bin/pcregrep -o '[^\w]vers=[\d{1}^,]' |    \
         /usr/bin/sed 's/,//')                     &&    \
-        /usr/bin/echo rw,relatime,nolock,$nv
+        /usr/bin/echo rw,relatime,proto=tcp,soft,nolock,$nv
       register: nfso
       changed_when: false
     - name: write nfs info to cloudconfig env file
@@ -154,5 +154,11 @@
       service: name=projectfiles.service state=started
       become: yes
       become_method: sudo
+    - name: keepnfsalive hack
+      service: name=keepnfsalive.service state=started
+      become: yes
+      become_method: sudo
+
+                
 
 
