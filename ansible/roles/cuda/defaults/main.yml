@@ -1,0 +1,1 @@
+docker_dir: "{{lookup('pipe', xenv+' PROJECT_DIR remote')}}/docker"

@@ -1,0 +1,21 @@
+---
+
+#todo: does this have any value?
+# - name: build cuda image (drivers + cuda)
+#   docker_image:
+#     args:
+#       name: cuda
+#       path: '{{docker_dir}}/nvidia'  
+#       state: present
+
+# - name: install drivers and cuda
+#   docker:
+#     args:
+#       image: cuda
+#       privileged: true
+
+
+- shell: touch ~/.cuda_installed && ./cuda.sh
+  args:
+    chdir: '{{docker_dir}}'
+    creates: ~/.cuda_installed

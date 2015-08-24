@@ -159,6 +159,12 @@
       become: yes
       become_method: sudo
 
-                
 
 
+# CUDA installation
+
+- hosts: '{{hosts}}'
+  gather_facts: false
+  roles:
+    - role: cuda
+      when: "{{ inventory_hostname in groups['gpu'] }}"
