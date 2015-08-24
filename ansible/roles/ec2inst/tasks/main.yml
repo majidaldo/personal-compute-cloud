@@ -20,6 +20,13 @@
     exact_count: '{{count}}'
     count_tag:
       Name: '{{name}}'
+    volumes: #by default you get a paltry 8GB of spc so...
+    #..the following resizes
+      - device_name: /dev/xvda #the root device
+        #todo: how to be more programmatic about which is the root vol?
+        volume_size: 40
+        device_type: gp2
+        delete_on_termination: true
     wait: yes #have to to get the info...
   register: ec2 #...or nothing will show up in ec2
 
