@@ -13,7 +13,7 @@ Two types of machines are started to support the scientific computing workflow (
 - global network addressing of docker containers across clouds (thanks to weave)
 - private docker registry accessible on all compute hosts (started on boot). The images in the registry persist over instantantiations of the machines as they are stored on the local file system.
 - automatic building of Dockerfiles and pushing them to the registry (on boot)
-- global NFS fileshare .. no messing with sending and receiving files 
+- global NFS fileshare .. no messing with sending and receiving files (functioning but not properly)
 - automatic configuration of ssh access
 - future: GPU provisioning
 
