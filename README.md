@@ -13,9 +13,9 @@ Two types of machines are started to support the scientific computing workflow (
 - global network addressing of docker containers across clouds (thanks to weave)
 - private docker registry accessible on all compute hosts (started on boot). The images in the registry persist over instantantiations of the machines as they are stored on the local file system.
 - automatic building of Dockerfiles and pushing them to the registry (on boot)
-- global NFS fileshare .. no messing with sending and receiving files (functioning but not properly)
+- global NFS fileshare .. no messing with sending and receiving files (functioning but not properly but seems find for working with code)
 - automatic configuration of ssh access
-- future: GPU provisioning
+- CUDA installation (if machine has NVIDIA gpu)
 
 
 ## Prerequisites
@@ -64,7 +64,7 @@ Start machine: `ansible-playbook ec2.yml`. To get a GPU machine: `ansible-playbo
 
 ### Compute Machine Setup
 
-After getting the machines, set them up: `ansible-playbook -vvvv setup.yml -e hosts=ansiblepattern`. [`ansiblepattern`](http://docs.ansible.com/ansible/intro_patterns.html) is usually going to be the provider name. You can also use any of the groups defined in [`ansible/inventory/ansible/hosts`](ansible/inventory/ansible/hosts).
+After getting the machines, set them up: `ansible-playbook  setup.yml -e hosts=ansiblepattern`. [`ansiblepattern`](http://docs.ansible.com/ansible/intro_patterns.html) is usually going to be the provider name. You can also use any of the groups defined in [`ansible/inventory/ansible/hosts`](ansible/inventory/ansible/hosts).
 
 After setup you can `ssh ec2hostname` or `ssh vagrant` because hosts are automatically added to `~/.ssh/config`. Furthermore, hosts are aliased with a prefix made of a group name followed by a hypen. So, `ssh cpu-vagrant` or `ssh ec2-someec2hostt` will work since there are groups for providers (eg. vagrant or EC2) and compute type (cpu or gpu). EC2 machines have more groups than the ones defined in the [hosts](ansible/inventory/ansible/hosts) file such as instance type and instance id. (Depending on your shell, you might be able to just hit tab after partially issuing the `ssh` command to complete the command.)
 
@@ -76,6 +76,7 @@ After setup you can `ssh ec2hostname` or `ssh vagrant` because hosts are automat
 - Make use of `weave` commands.
 - Make use of the file share on `/project`.
 - `cd` into `ansible/.vagrant` to issue `vagrant` commands on the local machine.
+- Use `cuda` [docker image](https://github.com/majidaldo/coreos-nvidia) to build your CUDA application.
 
 
 ## Notes
