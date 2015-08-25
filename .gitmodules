@@ -7,6 +7,6 @@
 [submodule "docker/docker-registry"]
 	path = docker/docker-registry
 	url = https://github.com/docker/docker-registry.git
-[submodule "docker/coreos-nvidia"]
+[submodule "docker/nvidia"]
 	path = docker/nvidia
 	url = https://github.com/majidaldo/coreos-nvidia.git
