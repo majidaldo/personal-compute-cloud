@@ -77,6 +77,7 @@ After setup you can `ssh ec2hostname` or `ssh vagrant` because hosts are automat
 - Make use of the file share on `/project`.
 - `cd` into `ansible/.vagrant` to issue `vagrant` commands on the local machine.
 - Use `cuda` [docker image](https://github.com/majidaldo/coreos-nvidia) to build your CUDA application.
+- Clean out your old hosts by removing entries in the directory `~/.ssh/config.d/` and the `~/.ssh/config` file (just delete them if you're feeling brave. todo: automate this)
 
 
 ## Notes
