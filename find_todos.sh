@@ -7,9 +7,9 @@ files=$(find ./ -type f \
 	     -not -path "./files/*" \
 	     -not -path "*/.git/*" \
 	     -not -path "*.tmp" \
-	     -not -path "./find_todos.sh*" \
+#	     -not -path "./find_todos.sh*" \
      )
-
+#todo: just use exclusion cmd in grep cmd directly
 
 for af in $files
 do
