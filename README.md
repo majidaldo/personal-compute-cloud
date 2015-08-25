@@ -60,7 +60,7 @@ Setup your EC2 account. Add the following substituting your credientials to `con
 AWS_ACCESS_KEY_ID='mykeyid'
 AWS_SECRET_ACCESS_KEY='mykey'
 ```
-Start machine: `ansible-playbook ec2.yml`. To get a GPU machine: `ansible-playbook ec2.yml -e type=gpu`  (useless now).
+Start machine: `ansible-playbook ec2.yml`. To get a GPU machine: `ansible-playbook ec2.yml -e type=gpu`.
 
 ### Compute Machine Setup
 
