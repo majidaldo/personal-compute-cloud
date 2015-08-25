@@ -1,1 +1,2 @@
 docker_dir: "{{lookup('pipe', xenv+' PROJECT_DIR remote')}}/docker"
+dockerfile_git_branch: cuda-7.0

@@ -17,7 +17,9 @@
 
 
 - name: install cuda
-  shell: ./cuda.sh && touch ~/.cuda_installed
+  shell: |
+    ./cuda.sh {{dockerfile_git_branch}} && \
+    touch ~/.cuda_installed
   args:
     chdir: '{{docker_dir}}'
     creates: ~/.cuda_installed
