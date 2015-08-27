@@ -5,6 +5,7 @@
 #http://docs.ansible.com/ansible/ec2_module.html
 
 
+
 - name: provision ec2 instances
   ec2:
     aws_access_key: '{{aws_access_key}}'
@@ -12,6 +13,7 @@
     key_name: personalcomputecloud
     image: '{{image}}'
     #state: '{{state}}' params exact_count and state are mutually exclu??
+##https://groups.google.com/forum/#!searchin/ansible-project/exact_count$20stopped$20instances/ansible-project/hYoM9Pv1Aa4/qVXm9S2k5jQJ
     group: personalcomputecloud
     region: '{{region}}'
     instance_type: "{{instance_type}}"
@@ -24,6 +26,7 @@
     #..the following resizes
       - device_name: /dev/xvda #the root device
         #todo: how to be more programmatic about which is the root vol?
+        #it's given after the fact
         volume_size: 40
         device_type: gp2
         delete_on_termination: true
@@ -32,11 +35,13 @@
 
 
 - name: wait for instance to show up in inventory
-  shell: '{{inventory_dir}}/ec2.sh --list'
+  shell: '{{inventory_dir}}/ec2.sh --list --refresh-cache'
   register: ec2i
   until: ec2i.stdout.find(item.public_dns_name) != -1
+  #todo: apply |from_json jinja filter
   with_items: ec2.instances #cool so if count=0 (wait=y) this..
   #..task will skip
   retries: 30
   delay: 10
+  changed_when: false
   

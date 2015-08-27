@@ -555,11 +555,9 @@ class Ec2Inventory(object):
     def add_instance(self, instance, region):
         ''' Adds an instance to the inventory and index, as long as it is
         addressable '''
-
         # Only return instances with desired instance states
         if instance.state not in self.ec2_instance_states:
             return
-
         # Select the best destination address
         if instance.subnet_id:
             dest = getattr(instance, self.vpc_destination_variable, None)
