@@ -135,12 +135,13 @@
       when: "uid.stdout not in ws.stdout"
       tags: wc
 
-    - name: start weave dns
-      service: name=weavedns.service   state=started
-      become: yes
-      become_method: sudo
     - name: start weave proxy
       service: name=weaveproxy.service state=started
+      become: yes
+      become_method: sudo
+      
+    - name: start weave dns
+      service: name=weavedns.service   state=started
       become: yes
       become_method: sudo
 
