@@ -4,6 +4,7 @@
   gather_facts: false
   vars:
     typ: "{{ type | default('compute') }}" #typ b/c recursion error!
+    stt: "{{ state | default('running') }}"
   pre_tasks:
     - name: get ec2_vars
       include_vars: '{{playbook_dir}}/roles/ec2inst/vars/main.yml'
@@ -12,6 +13,30 @@
         rgn: "{{ region | default(ec2_vars.defaults.region)}}"
         img:  "{{ image  | default(ec2_vars[ec2_vars.defaults.region].image)}}"
 
+#check that you have this very new feature
+#https://github.com/ansible/ansible-modules-core/pull/1978
+    - name: restart stopped instances
+      ec2: #todo: should this be moved into the ec2inst role?
+        aws_access_key: "{{ lookup('pipe',xenv+'AWS_ACCESS_KEY_ID') }}"
+        aws_secret_key: "{{ lookup('pipe',xenv+'AWS_SECRET_ACCESS_KEY') }}"
+        instance_tags:
+          Name: "{{ ec2_vars.defaults.name+'-'+typ }}"
+        state: '{{stt}}'
+        region: "{{rgn}}"
+        wait: yes
+      register: ec2r
+
+    - name: wait for restarted instance to show up in inventory
+      shell: '{{inventory_dir}}/ec2.sh --list --refresh-cache'
+      register: ec2ri
+      until: ec2ri.stdout.find(item.public_dns_name) != -1
+      #todo: apply |from_json jinja filter
+      with_items: ec2r.instances 
+      retries: 30
+      delay: 10
+      when: "stt!='stopped'"
+      changed_when: false
+
   roles:
     - role: ec2inst
       name:          "{{ ec2_vars.defaults.name+'-'+typ }}"
@@ -19,6 +44,7 @@
       count:         "{{cnt}}"
       region:        "{{rgn}}"
       image:         "{{img}}"
+      when: "stt!='stopped'"
 
 
 
