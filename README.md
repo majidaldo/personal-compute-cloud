@@ -20,12 +20,13 @@ Two types of machines are started to support the scientific computing workflow (
 - global NFS fileshare .. no messing with sending and receiving files (functioning but not properly but seems find for working with code)
 - automatic configuration of ssh access
 - CUDA installation (if machine has NVIDIA gpu)
+- Saving of compute machine state in EC2 or Vagrant for quick resumption of work.
 
 
 ## Prerequisites
 
 - Linux: duh. windows users can use  (plain) [`cygwin`](http://www.cygwin.com). but i prefer [`babun`](http://babun.github.io). 
-- Ansible: tested with 1.9. works on windows with cygwin with [`setup/cygwin/install-myansible.sh`](setup/cygwin/install-myansible.sh)
+- Ansible: tested with 1.9. works on windows with cygwin with [`setup/cygwin/install-myansible.sh`](setup/cygwin/install-myansible.sh). But as of 8/'15, you'll have to get my version of Ansible even on Linux until [this](https://github.com/ansible/ansible-modules-core/pull/1978) gets figured out.
 - python-vagrant
 - Vagrant: windows users should install vagrant-winnfsd (see [`setup/install-vagrant.bat`](setup/install-vagrant.bat)). Kill the winnfs.exe process if you have nfs mounting issues
 
@@ -82,6 +83,7 @@ After setup you can `ssh ec2hostname` or `ssh vagrant` because hosts are automat
 - `cd` into `ansible/.vagrant` to issue `vagrant` commands on the local machine.
 - Use `cuda` [docker image](https://github.com/majidaldo/coreos-nvidia) to build your CUDA application.
 - Clean out your old hosts by removing entries in the directory `~/.ssh/config.d/` and the `~/.ssh/config` file (just delete them if you're feeling brave. todo: automate this)
+- Use `ansible/save-aprovider.sh` to save the state of its machines. Resume by running the corresponding provisioning and setup programs.
 
 
 ## Notes
