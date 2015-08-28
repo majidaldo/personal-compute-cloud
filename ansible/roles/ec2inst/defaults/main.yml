@@ -1,0 +1,11 @@
+---
+
+#ami ids https://coreos.com/os/docs/latest/booting-on-ec2.html
+image: ami-6375d808 #associated with us-east-1 and instance type
+instance_type: t2.micro
+count: 1
+state: absent #not used
+name: pcc-compute # hopfully it's unique
+region: us-east-1
+
+

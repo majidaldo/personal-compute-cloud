@@ -26,6 +26,12 @@
       write_cconfig_pth: "{{playbook_dir}}/roles/coreos-cloudconfig/templates/init.tmp"
       cconfig: init #inventory info added from this role...
 
+  tasks:
+    - add_host:
+        name: init
+        groups: coreos
+        ansible_python_interpreter: /home/core/bin/python
+   #aaaah!! why do i have to write this???  ^^^^^^^^^
 
 #...so the following will work
 - hosts: localhost
@@ -34,7 +40,7 @@
     - role: ssh_config
       ssh_config_hosts: init
       host_key_checking: false
-
+ 
 
 - hosts: init
   gather_facts: false

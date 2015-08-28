@@ -1,0 +1,33 @@
+---
+
+#todo: does this have any value?
+# - name: build cuda image (drivers + cuda)
+#   docker_image:
+#     args:
+#       name: cuda
+#       path: '{{docker_dir}}/nvidia'  
+#       state: present
+
+# - name: install drivers and cuda
+#   docker:
+#     args:
+#       image: cuda
+#       privileged: true
+
+
+
+- name: install cuda
+  shell: |
+    ./cuda.sh {{dockerfile_git_branch}} && \
+    touch ~/.cuda_installed
+  args:
+    chdir: '{{docker_dir}}'
+    creates: ~/.cuda_installed
+
+
+- name: check device driver is loaded
+  shell: lsmod | grep nvidia
+  register: lsmod
+  failed_when: "'nvidia_uvm' not in lsmod.stdout"
+  changed_when: false
+  

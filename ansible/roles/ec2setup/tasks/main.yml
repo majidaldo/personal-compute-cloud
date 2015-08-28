@@ -1,0 +1,54 @@
+---
+
+
+- name: create key pair
+  ec2_key:
+    aws_access_key: '{{aws_access_key}}'
+    aws_secret_key: '{{aws_secret_access_key}}' 
+    name: personalcomputecloud
+    key_material: "{{ item }}"
+    state: present
+    region: '{{region}}'
+  with_file: ~/.ssh/personalcomputecloud.pub
+
+
+- name: create security (firewall stuff) group
+  ec2_group:
+    description: coreos security
+    aws_access_key: '{{aws_access_key}}'
+    aws_secret_key: '{{aws_secret_access_key}}'
+    name: personalcomputecloud
+    region: '{{region}}'
+    rules:
+      #ping
+      - proto: icmp
+        from_port: -1
+        to_port: -1
+        cidr_ip: 0.0.0.0/0
+      #ssh of course
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+      #weave
+      - proto: tcp
+        from_port: 6783
+        to_port: 6783
+        cidr_ip: 0.0.0.0/0
+      - proto: udp
+        from_port: 6783
+        to_port: 6783
+        cidr_ip: 0.0.0.0/0
+    rules_egress:
+      #all outbound passes
+      - proto: all
+        from_port: -1
+        to_port: -1
+        cidr_ip: 0.0.0.0/0
+      #that's it!
+    purge_rules: true
+    purge_rules_egress: true
+      
+  
+  
+

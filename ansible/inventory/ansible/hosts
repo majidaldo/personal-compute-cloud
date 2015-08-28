@@ -2,5 +2,42 @@ localhost ansible_connection=local
 
 [coreos]
 init
-compute-local
-#compute-local-inst[0:9]
+
+
+#COMPUTATION computers are either:
+#compute(cpu) or gpu
+
+[cpu]
+[gpu]
+
+
+
+#PROVIDERS
+#todo: are there any variables that mean:
+#all inventory grps?
+
+[providers]
+[vagrant]
+[ec2]
+[providers:children]
+vagrant
+ec2
+
+#depending on dynamic inventory for this section
+[tag_Name_pcc_compute]
+[tag_Name_pcc_gpu]
+
+
+#todo: in the distant future,
+#maybe i can get vagrant to pass thru gpu
+
+[cpu:children]
+tag_Name_pcc_compute
+vagrant
+
+[gpu:children]
+tag_Name_pcc_gpu
+
+#finally, everything that computes is coreos
+[coreos:children]
+providers

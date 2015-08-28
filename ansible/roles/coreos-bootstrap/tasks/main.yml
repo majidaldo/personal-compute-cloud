@@ -13,6 +13,9 @@
   ignore_errors: True
   changed_when: false
   when: need_bootstrap | failed
+  environment:
+    ansible_python_interpreter: "{{ansible_python_interpreter}}"
+  
 
 #should be copy but for some reason not working with ansible 1.9
 - name: Copy get-pip.py

@@ -1,9 +1,36 @@
 ---
 
+# config ssh access first thing
+- hosts: '{{hosts}}'
+  gather_facts: false
+  tasks:
+    - name: add host to coreos grp
+      add_host: hostname={{inventory_hostname}}
+                groups=coreos
+    - name: make host names out of groups
+      add_host:
+        name: "{{item+'-'+inventory_hostname}}"
+        ansible_ssh_host: '{{inventory_hostname}}'
+        ansible_ssh_port: "{{ansible_ssh_port | default('22') }}"
+        ansible_ssh_private_key_file: "{{ansible_ssh_private_key_file}}"
+        groups: coreos
+      with_items: '{{group_names}}'
+      
+- hosts: localhost
+  gather_facts: true
+  roles:
+    #todo: problem: passing hosts=cpu does not get ec2 ones!
+    - role: ssh_config
+      ssh_config_hosts: "{{groups.coreos | default('localhost')}}"
+      #in case no matched hosts. localhost is discarded by role
+      host_key_checking: false
+
+
+
 - hosts: localhost
   gather_facts: false
   vars:
-    cosc: "{{coreos_config}}"
+    cosc: compute #coreos_config
 
   pre_tasks:
     - name: get nfs share path from init machine
@@ -14,13 +41,16 @@
         /usr/bin/sed 's/://'
       register: nfsp
       changed_when: false
-    - name: get nfs share options from init machine
+    - name: get nfs share options from init machine # not really
       delegate_to: init
       shell: |
-        /usr/sbin/nfsstat -m | \
-        /usr/bin/grep  -o -e 'Flags:.*' | \
-        /usr/bin/sed 's/Flags://' | \
-        /usr/bin/sed 's/\t//'
+        nv=$(/usr/sbin/nfsstat -m                  |    \
+        /usr/bin/grep  -o -e 'Flags:.*'            |    \
+        /usr/bin/sed 's/Flags://'                  |    \
+        /usr/bin/sed 's/\t//'                      |    \
+        /usr/bin/pcregrep -o '[^\w]vers=[\d{1}^,]' |    \
+        /usr/bin/sed 's/,//')                     &&    \
+        /usr/bin/echo rw,relatime,proto=tcp,soft,nolock,$nv
       register: nfso
       changed_when: false
     - name: write nfs info to cloudconfig env file
@@ -32,18 +62,14 @@
     
     - role: cloudconfigwriter
       write_cconfig_pth: "{{playbook_dir}}/roles/coreos-cloudconfig/templates/{{cosc}}.tmp"
-      cconfig: "{{cosc}}"
+      cconfig: compute #coreos_config
 
 
 
-- hosts: "{{coreos_hosts}}"
+- hosts: "{{hosts}}"
   gather_facts: false
 
   pre_tasks:
-
-    - name: add host to coreos grp
-      add_host: hostname={{inventory_hostname}}
-                groups=coreos
     
     - name: get outward-facing ip #really just for vagrant machines
       shell: "python -c \"import socket; print socket.gethostbyname('{{inventory_hostname}}')\""
@@ -60,7 +86,7 @@
     
     - role: coreos-bootstrap
     - role: coreos-cloudconfig
-      cconfig: "{{coreos_config}}"
+      cconfig: compute # coreos_config
       public_ip: "{{pubip.stdout}}"
       
   tasks:
@@ -108,11 +134,12 @@
       delegate_to: init
       when: "uid.stdout not in ws.stdout"
       tags: wc
-
+      
     - name: start weave dns
       service: name=weavedns.service   state=started
       become: yes
       become_method: sudo
+
     - name: start weave proxy
       service: name=weaveproxy.service state=started
       become: yes
@@ -128,5 +155,17 @@
       service: name=projectfiles.service state=started
       become: yes
       become_method: sudo
-      
- 
+    - name: keepnfsalive hack
+      service: name=keepnfsalive.service state=started
+      become: yes
+      become_method: sudo
+
+
+
+# CUDA installation
+
+- hosts: '{{hosts}}'
+  gather_facts: false
+  roles:
+    - role: cuda
+      when: "{{ inventory_hostname in groups['gpu'] }}"

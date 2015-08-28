@@ -24,7 +24,7 @@ do
 	#if [ $? != 0 ] #wrks with the docker cmd
 	if [ "${ncr}" != "weave" ] #since scanner opt not avail in ncat
 	then
-	    weave forget $apr
+	    /opt/bin/weave forget $apr
 	    echo $apr down. weave forgetting.
 	else
 	    #echo $apr ok

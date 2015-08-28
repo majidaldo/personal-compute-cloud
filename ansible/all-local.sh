@@ -7,9 +7,9 @@ if [ $destroy = "destroy" ]; then
 fi
 
 ansible-playbook -vvvv init.yml &
-ansible-playbook -vvvv compute-local.yml &
+ansible-playbook -vvvv vagrant.yml &
 wait
-ansible-playbook -vvvv coreos-setup.yml -e coreos_hosts=compute-local* -e coreos_config=compute
+ansible-playbook -vvvv setup.yml -e hosts=vagrant
 
 
 

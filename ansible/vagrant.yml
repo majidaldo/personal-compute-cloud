@@ -1,0 +1,9 @@
+---
+
+- hosts: localhost
+  gather_facts: false
+
+  roles:
+    - role: vagrant-compute
+      count: 1
+

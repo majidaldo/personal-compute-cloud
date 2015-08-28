@@ -1,0 +1,31 @@
+---
+
+#this var file could be elaborate
+
+
+ec2_vars:
+  
+  #the reqd vars
+  defaults:
+    region: us-east-1
+    name: pcc
+    count: 1
+    #img given by region
+    type: compute
+    
+
+  #depends on region
+  us-east-1:
+    image: ami-6375d808
+  us-west-1:
+    image: ami-1b33cc5f
+
+  #imgs are hvm. i think the following
+  #only work for hvm
+  
+  #independent of region?
+  type:
+    gpu: g2.2xlarge
+    compute: c4.2xlarge
+#2x means 8 cpus
+

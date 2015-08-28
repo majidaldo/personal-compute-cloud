@@ -1,7 +1,7 @@
 ---
 
 
-vm_name: compute-local
+vm_name: vagrant
 memory: 8096
 cpus: 4
 

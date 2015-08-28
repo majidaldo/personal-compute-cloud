@@ -11,12 +11,7 @@ mkdir -p $regdatadir
 docker run \
         --name registry \
         -d \
-        -v ${regdatadir}:/registry \
-        -e STORAGE_PATH=/registry \
-        -e SETTINGS_FLAVOR=dev \
-        -e GUNICORN_OPTS=[--preload] \
-        -e MIRROR_SOURCE=https://registry-1.docker.io \
-        -e MIRROR_SOURCE_INDEX=https://index.docker.io \
+        -v ${regdatadir}:/var/lib/registry \
         -p 5000:5000 \
         docker-registry
 

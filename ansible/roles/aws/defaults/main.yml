@@ -1,0 +1,6 @@
+---
+
+aws_access_key: "{{ lookup('pipe',xenv+'AWS_ACCESS_KEY_ID') }}"
+aws_secret_access_key: "{{ lookup('pipe',xenv+'AWS_SECRET_ACCESS_KEY') }}"
+
+
