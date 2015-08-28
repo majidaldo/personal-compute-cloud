@@ -330,7 +330,6 @@ coreos:
         ${REGISTRY_WNET} \
         --name registry \
         -d \
-        -v ${REGISTRYDATA_DIR}:/var/lib/registry \
         -p 5000:5000 \
         docker-registry '
         ExecStart=/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \

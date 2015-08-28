@@ -1,3 +1,7 @@
+this is the windowz branch with the following defects:
+- the registry just can't use the winnfs share (win 10 problem?)! so now it doesn't write to the local files. go into .vagrant folder and `vagrant suspend` to achieve some persistence if you want to stop but not kill the init machine.
+
+
 # CoreOS-based personal compute cloud
 personal compute cloud using [Ansible](http://www.ansible.com), [CoreOS](http://www.coreos.com),  [Docker](http://www.docker.com), [Vagrant](http://www.vagrantup.com), [Virtualbox](https://www.virtualbox.org), and [weave](http://weave.works).
 
