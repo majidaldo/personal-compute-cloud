@@ -6,7 +6,8 @@
 	url = https://github.com/majidaldo/ansible-role-ssh-config.git
 [submodule "docker/docker-registry"]
 	path = docker/docker-registry
-	url = https://github.com/docker/docker-registry.git
+	#url = https://github.com/docker/docker-registry.git
+	url = https://github.com/docker/distribution.git
 [submodule "docker/nvidia"]
 	path = docker/nvidia
 	url = https://github.com/majidaldo/coreos-nvidia.git

@@ -11,10 +11,7 @@ mkdir -p $regdatadir
 docker run \
         --name registry \
         -d \
-        -v ${regdatadir}:/registry \
-        -e STORAGE_PATH=/registry \
-        -e SETTINGS_FLAVOR=dev \
-        -e GUNICORN_OPTS=[--preload] \
+        -v ${regdatadir}:/var/lib/registry \
         -p 5000:5000 \
         docker-registry
 
