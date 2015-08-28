@@ -8,7 +8,7 @@ write_files:
   #todo: make a compute-local config that uses the insecure reg w/ mirr
   #since it's best to get imgs locally
   #and a compute-remote config that doesn't use mirr
-- path: /etc/systemd/system/docker.service.d/50-insecure-registry-mirr.conf
+- path: /etc/systemd/system/docker.service.d/50-insecure-registry.conf
 - path: /home/core/waitforfile.sh
 
 
