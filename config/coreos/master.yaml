@@ -380,3 +380,26 @@ coreos:
 
 #todo: file share make a var out of the file share pth
 
+    - name: swap.service
+      command: start
+      content: |
+        [Unit]
+        Description=Turn on swap
+        
+        [Service]
+        Type=oneshot
+        Environment="SWAPFILE=/${SWP_GB}GiB.swap"
+        RemainAfterExit=true
+        ExecStartPre=/bin/bash -c "\
+        fallocate -l ${SWP_GB}G $SWAPFILE && \
+        chmod 600 $SWAPFILE && \
+        chattr +C $SWAPFILE && \
+        mkswap $SWAPFILE && \
+        losetup -f $SWAPFILE"
+        ExecStart=/usr/bin/sh -c "/sbin/swapon $(/usr/sbin/losetup -j ${SWAPFILE} | /usr/bin/cut -d : -f 1)"
+        ExecStop=/usr/bin/sh -c "/sbin/swapoff $(/usr/sbin/losetup -j ${SWAPFILE} | /usr/bin/cut -d : -f 1)"
+        ExecStopPost=/usr/bin/sh -c "/usr/sbin/losetup -d $(/usr/sbin/losetup -j ${SWAPFILE} | /usr/bin/cut -d : -f 1)"
+
+        [Install]
+        WantedBy=local.target
+   

@@ -21,6 +21,7 @@ coreos:
 #  - name: docker-tcp.socket
 #  - name: fleet.service
 #  - name: etcd2.service
+  - name: swap.service
   - name: projectfiles.service
     command: start
     content: |
