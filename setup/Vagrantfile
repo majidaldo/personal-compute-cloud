@@ -23,6 +23,11 @@ Vagrant.configure(2) do |config|
                      mkswap          /swapfile && \
                      swapon          /swapfile"
   end
+  config.vm.provision "add hosts file",
+                      type: "shell" do |hostsfile|
+    hostsfile.inline="echo 127.0.0.1 registry > /etc/hosts"
+    hostsfile.args="#{ENV['registry_host']}"
+  end
   
   config.vm.provision "docker registry img creation",
                       type: "shell" do |registry|
