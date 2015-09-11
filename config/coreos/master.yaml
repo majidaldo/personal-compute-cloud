@@ -334,6 +334,7 @@ coreos:
         /opt/bin/weave run \
         ${REGISTRY_WNET} \
         --name registry \
+        -v ${REGISTRYDATA_DIR}:/var/lib/registry \
         -d \
         -p 5000:5000 \
         docker-registry '

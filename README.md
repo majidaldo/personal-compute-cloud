@@ -1,5 +1,5 @@
 this is the windowz branch with the following defects:
-- the registry just can't use the winnfs share (win 10 problem?)! so now it doesn't write to the local files. go into .vagrant folder and `vagrant suspend` to achieve some persistence if you want to stop but not kill the init machine.
+- the registry just can't use the winnfs share (win 10 problem?)! so now it doesn't write to the local files. However, as a work around, a the registry uses a mounted filesystem created on your shared file folder. The downside is the you have to set some size by setting `VARLIBDOCKER_GB` (GB in integers) in [config/project.env](config/project.env).
 
 
 # CoreOS-based personal compute cloud
