@@ -3,6 +3,7 @@
 #cloud-config
 
 write_files:
+- path: /etc/hosts
 - path: /home/core/sys.env
 - path: /etc/profile.d/sys_env.sh
   #todo: make a compute-local config that uses the insecure reg w/ mirr

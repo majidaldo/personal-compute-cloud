@@ -120,4 +120,4 @@ write_files:
 - path: /etc/systemd/system/docker.service.d/50-insecure-registry-mirr.conf
 - path: /home/core/waitforfile.sh
 - path: /home/core/fwd.sh
-
+- path: /etc/hosts
