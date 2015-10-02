@@ -14,7 +14,7 @@ cd $SCRIPTPATH
 #docker file dirs should have digits followed by -
 #like 123-dockerfiledir
 #order in the files is needed to take care of deps
-for adfdir in $(ls -d1 */ | grep -Ei '[0-9]-')
+for adfdir in $(ls -d1 */ | grep -Ei '^[0-9]+-')
 do
     #use dir as a name. numbers
     #                  remove / from dir/   remove "number-"
