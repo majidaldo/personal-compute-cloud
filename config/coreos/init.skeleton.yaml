@@ -31,18 +31,18 @@ coreos:
       Type=oneshot
       RemainAfterExit=yes
       ExecStart=/usr/bin/ls ${PROJECT_DIR}
-  # - name: varlibdocker.service
-  #   command: start
-  #   content: |
-  #     [Unit]
-  #     After=projectfiles.service
-  #     Requires=projectfiles.service
-  #     Before=docker.service
-  #     [Service]
-  #     Type=oneshot
-  #     RemainAfterExit=yes
-  #     ExecStartPre=-${PROJECT_DIR}/setup/varlibdocker.sh
-  #     ExecStart=/usr/bin/mountpoint -q /home/core/vld
+  - name: varlibdocker.service
+    command: start
+    content: |
+      [Unit]
+      After=projectfiles.service
+      Requires=projectfiles.service
+      Before=docker.service
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStartPre=-${PROJECT_DIR}/setup/varlibdocker.sh
+      ExecStart=/usr/bin/mountpoint -q /home/core/vld
   # - name: var-lib-docker.mount
   #   command: start
   #   content: |
