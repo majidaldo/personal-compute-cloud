@@ -7,7 +7,8 @@
 thisdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd $thisdir
 
-PROJECT_DIR_REL=$thisdir/../
+# i don't understand readling options.
+PROJECT_DIR_REL=`readlink -m ${thisdir}/..`
 source ./project.env
 PROJECT_DIR_ROOT=${2-${PROJECT_DIR_ROOT}}
 
