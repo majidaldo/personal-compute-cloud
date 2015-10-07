@@ -1,6 +1,4 @@
-this is the windowz branch with the following defects:
-- the registry just can't use the winnfs share (win 10 problem?)! so now it doesn't write to the local files. However, as a work around, a the registry uses a mounted filesystem created on your shared file folder. The downside is the you have to set some size by setting `VARLIBDOCKER_GB` (GB in integers) in [config/project.env](config/project.env).
-
+abandoning for btrfs branch.
 
 # CoreOS-based personal compute cloud
 personal compute cloud using [Ansible](http://www.ansible.com), [CoreOS](http://www.coreos.com),  [Docker](http://www.docker.com), [Vagrant](http://www.vagrantup.com), [Virtualbox](https://www.virtualbox.org), and [weave](http://weave.works).
