@@ -104,7 +104,7 @@
       become_method: sudo
 
     - name: weave status to see if we\'ve added the peer
-      shell: /opt/bin/weave status 
+      shell: /opt/bin/weave status peers
       delegate_to: init
       register: ws
       changed_when: false
@@ -112,13 +112,9 @@
     - name: get unique id of peer on weave
       shell: |
         #gets the unique id of the machine (better to use instead of ip)
-        /opt/bin/weave status > ws.tmp && \
-        /usr/bin/cat ws.tmp | \
-        #want only the first (self) result hench '-m 1'
-        /usr/bin/grep -m 1 -o -e 'UID[ ][0-9]*' | \
-        /usr/bin/sed 's/UID //' && \
-        /usr/bin/rm ws.tmp
-        #does not work with piping. go figure.
+        # assuming index 0 gets self id 
+        /opt/bin/weave report | \
+        /usr/bin/jq -r '.Router.Peers[0].UID'        
       register: uid
       changed_when: false
       tags: wc
@@ -131,19 +127,10 @@
         #..if host is alive!
         /opt/bin/weave forget {{pubip.stdout}} && \
         /opt/bin/weave connect {{pubip.stdout}}
-      delegate_to: init
+      #init computer is teh computer that can see others
+      delegate_to: init 
       when: "uid.stdout not in ws.stdout"
       tags: wc
-      
-    - name: start weave dns
-      service: name=weavedns.service   state=started
-      become: yes
-      become_method: sudo
-
-    - name: start weave proxy
-      service: name=weaveproxy.service state=started
-      become: yes
-      become_method: sudo
 
     - name: weave expose so that we can have the puter see weave
       shell: source /etc/profile.d/sys_env.sh && \

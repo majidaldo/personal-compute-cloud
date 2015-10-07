@@ -25,8 +25,7 @@ write_files:
           eval export $env
       done <  /home/core/sys.env
       #docker env . theres a 'export' here. eval $(export ...)
-      #proxy-env changed to just env in >1.0.1 release
-      eval $(/opt/bin/weave proxy-env)
+      eval $(/opt/bin/weave env)
       if grep -Fxq "DOCKER_HOST*" /home/core/sys.env
       then
       :
@@ -154,24 +153,7 @@ coreos:
         --location \
         https://github.com/weaveworks/weave/releases/download/${WEAVE_SRCVER}/weave \
         --output /opt/bin/weave
-        ExecStartPre=/usr/bin/chmod +x /opt/bin/weave
-        ExecStartPre=/usr/bin/docker pull \
-        registry.hub.docker.com/weaveworks/weave:${WEAVE_IMGVER}
-        ExecStartPre=/usr/bin/docker pull \
-        registry.hub.docker.com/weaveworks/weavedns:${WEAVE_IMGVER}
-        ExecStartPre=/usr/bin/docker pull \
-        registry.hub.docker.com/weaveworks/weaveexec:${WEAVE_IMGVER}
-        ExecStartPre=/usr/bin/docker tag -f \
-        registry.hub.docker.com/weaveworks/weave:${WEAVE_IMGVER} \
-        weaveworks/weave:${WEAVE_IMGVER}
-        ExecStartPre=/usr/bin/docker tag -f \
-        registry.hub.docker.com/weaveworks/weavedns:${WEAVE_IMGVER} \
-        weaveworks/weavedns:${WEAVE_IMGVER}
-        ExecStartPre=/usr/bin/docker tag -f \
-        registry.hub.docker.com/weaveworks/weaveexec:${WEAVE_IMGVER} \
-        weaveworks/weaveexec:${WEAVE_IMGVER}
-        #explicitly getting from registry.hub to bypass docker reg mirr
-        #setting i might have
+        ExecStartPre=/usr/bin/chmod a+x /opt/bin/weave
         ExecStart=/bin/echo Weave Installed
     - name: weave.service
       command: start
@@ -184,43 +166,13 @@ coreos:
         Requires=install-weave.service
         
         [Service]
-        ExecStartPre=/opt/bin/weave launch -ipsubnet ${WEAVE_AUTO_NET} -iprange ${WEAVE_MANL_NET}
+        ExecStartPre=/opt/bin/weave launch \
+        --init-peer-count 1 \
+        --ipalloc-default-subnet ${WEAVE_AUTO_NET} \
+        -iprange ${WEAVE_MANL_NET}
         ExecStart=/usr/bin/docker logs -f weave
         SuccessExitStatus=2
         ExecStop=/opt/bin/weave stop
-    - name: weavedns.service
-      command: start
-      enable: true
-      content: |
-        [Unit]
-        Description=Weave dns Network
-        Documentation=http://zettio.github.io/weave/
-        Requires=weave.service 
-        After=   weave.service 
-        
-        [Service]
-        EnvironmentFile=/home/core/sys.env
-        ExecStartPre=/opt/bin/weave launch-dns 
-        ExecStart=/usr/bin/docker logs -f weavedns
-        SuccessExitStatus=2
-        ExecStop=/opt/bin/weave stop-dns
-    - name: weaveproxy.service
-      command: start
-      enable: true
-      content: |
-        [Unit]
-        Description=Weave proxy
-        Documentation=http://zettio.github.io/weave/
-        Requires=weavedns.service 
-        After=   weavedns.service 
-        
-        [Service]
-        #EnvironmentFile=/home/core/sys.env
-        #ExecStartPre=/etc/profile.d/sys_env.sh
-        ExecStartPre=/opt/bin/weave launch-proxy
-        ExecStart=/usr/bin/docker logs -f weaveproxy
-        SuccessExitStatus=2
-        ExecStop=/opt/bin/weave stop-proxy
         
     - name: weaveconnect.service
       command: start
@@ -228,8 +180,8 @@ coreos:
       content: |
         [Unit]
         Description=expose weave svcs
-        After=   weaveproxy.service
-        Requires=weaveproxy.service
+        After=   weave.service
+        Requires=weave.service
 
         [Service]
         Type=oneshot
@@ -313,8 +265,8 @@ coreos:
       content: |
         [Unit]
         Description=pvt docker registry
-        After=   docker.service projectfiles.service loadregimg.service weaveproxy.service
-        Requires=docker.service projectfiles.service loadregimg.service weaveproxy.service
+        After=   docker.service projectfiles.service loadregimg.service weave.service
+        Requires=docker.service projectfiles.service loadregimg.service weave.service
 
         [Service]
         KillMode=none
@@ -324,13 +276,13 @@ coreos:
         #ExecStartPre=/etc/profile.d/sys_env.sh
         #EnvironmentFile=/home/core/sys.env
         ExecStartPre=/usr/bin/mkdir -p ${REGISTRYDATA_DIR}
-        ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
+        ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave env) && \
         /usr/bin/docker kill registry'
-        ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
+        ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave env) && \
         /usr/bin/docker rm -f registry'
         #${REGISTRY_WNET} backslash
         #ExecStartPre=/usr/bin/sh -c '/usr/bin/docker run backslash
-        ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
+        ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave env) && \
         /opt/bin/weave run \
         ${REGISTRY_WNET} \
         --name registry \
@@ -338,9 +290,9 @@ coreos:
         -d \
         -p 5000:5000 \
         docker-registry '
-        ExecStart=/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
+        ExecStart=/usr/bin/sh -c 'eval $(/opt/bin/weave env) && \
         /usr/bin/docker logs -f registry'
-        ExecStop=/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
+        ExecStop=/usr/bin/sh -c 'eval $(/opt/bin/weave env) && \
         /usr/bin/docker stop registry'
 
        
@@ -363,15 +315,15 @@ coreos:
         #and you need to: modprobe nfs; modprobe nfsd; but im not using this
         #ExecStartPre=/etc/profile.d/sys_env.sh
         #EnvironmentFile=/home/core/sys.env
-        ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
+        ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave env) && \
         /usr/bin/docker kill nfs-server'
         ExecStartPre=/usr/sbin/modprobe nfs
         ExecStartPre=/usr/sbin/modprobe nfsd
-        ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
+        ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave env) && \
         /usr/bin/docker rm -f nfs-server'
         #${REGISTRY_WNET} backslash
         #ExecStartPre=/usr/bin/sh -c '/usr/bin/docker run backslash
-        ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
+        ExecStartPre=-/usr/bin/sh -c 'eval $(/opt/bin/weave env) && \
         /opt/bin/weave run \
         ${FILESHARE_WNET} \
         --name nfs-server \
@@ -379,9 +331,9 @@ coreos:
         -d \
         -v /tsad-proj:/tsad-proj \
         nfs-server /tsad-proj '
-        ExecStart=/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
+        ExecStart=/usr/bin/sh -c 'eval $(/opt/bin/weave env) && \
         /usr/bin/docker logs -f nfs-server'
-        ExecStop=/usr/bin/sh -c 'eval $(/opt/bin/weave proxy-env) && \
+        ExecStop=/usr/bin/sh -c 'eval $(/opt/bin/weave env) && \
         /usr/bin/docker stop nfs-server'
 
 #todo: file share make a var out of the file share pth

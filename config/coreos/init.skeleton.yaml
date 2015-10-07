@@ -61,17 +61,16 @@ coreos:
   - name: loadregimg.service
   - name: install-weave.service
   - name: weave.service #todo: chk if fails if varlibdocker is from scratch
-  - name: weavedns.service
-  - name: weaveproxy.service
-  - name: weaveforget.service
-    command: start
-    content: |
-      [Unit]
-      Description= forget lost hosts
-      Requires=weave.service
-      After=   weave.service
-      [Service]
-      ExecStart=${PROJECT_DIR}/config/coreos/weaveforget.sh
+    #todo: new (v1.1) weave seems to be robust and not needing this. chk.
+  # - name: weaveforget.service
+  #   command: start
+  #   content: |
+  #     [Unit]
+  #     Description= forget lost hosts
+  #     Requires=weave.service
+  #     After=   weave.service
+  #     [Service]
+  #     ExecStart=${PROJECT_DIR}/config/coreos/weaveforget.sh
       
   - name: registry.service
   - name: stuffregistry.service #todo tst if htis long proc makes a prblm
@@ -82,8 +81,8 @@ coreos:
     content: |
       [Unit]
       Description=expose fileshare to network
-      Requires=weaveproxy.service
-      After=   weaveproxy.service
+      Requires=weave.service
+      After=   weave.service
       
       [Service]
       Type=oneshot

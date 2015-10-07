@@ -44,10 +44,6 @@ coreos:
   - name: install-weave.service
   - name: weave.service
     command: stop
-  - name: weavedns.service
-    command: stop
-  - name: weaveproxy.service
-    command: stop
   - name: projectfiles.service
     command: stop
   - name: keepnfsalive.service
