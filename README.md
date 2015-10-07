@@ -1,5 +1,5 @@
-this is the windowz branch with the following defects:
-- the registry just can't use the winnfs share (win 10 problem?)! so now it doesn't write to the local files. However, as a work around, a the registry uses a mounted filesystem created on your shared file folder. The downside is the you have to set some size by setting `VARLIBDOCKER_GB` (GB in integers) in [config/project.env](config/project.env).
+this is the btrfs branch with the following change/feature:
+- the registry just can't use the winnfs share (win problem?)! so now it doesn't write to the local files. However, as a work around, the registry uses a mounted filesystem created on your shared file folder. The downside is the you have to set some size by setting `VARLIBDOCKER_GB` (GB in integers) in [config/project.env](config/project.env). it turns out that any program that needs advanced access to the filesystem, cannot use the nfs share. so i'm thinking of making this change as part of the master branch.
 
 
 # CoreOS-based personal compute cloud
