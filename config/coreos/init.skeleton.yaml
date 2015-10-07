@@ -31,7 +31,7 @@ coreos:
       Type=oneshot
       RemainAfterExit=yes
       ExecStart=/usr/bin/ls ${PROJECT_DIR}
-  - name: varlibdocker.service
+  - name: btrfs.service
     command: start
     content: |
       [Unit]
@@ -48,9 +48,9 @@ coreos:
   #   content: |
   #     [Unit]
   #     Description=Mount to /var/lib/docker
-  #     Requires=varlibdocker.service
-  #     After=varlibdocker.service
-  #     Before=docker.service
+  #     Requires=btrfs.service
+  #     After=btrfs.service
+  #     Before=btrfs.service
   #     [Mount]
   #     #mounting /dev/varlibdocker does not work!!!!
   #     What=/home/core/vld
@@ -60,7 +60,7 @@ coreos:
   - name: 10-weave.network
   - name: loadregimg.service
   - name: install-weave.service
-  - name: weave.service #todo: chk if fails if varlibdocker is from scratch
+  - name: weave.service 
     #todo: new (v1.1) weave seems to be robust and not needing this. chk.
   # - name: weaveforget.service
   #   command: start
