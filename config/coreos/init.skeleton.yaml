@@ -42,7 +42,7 @@ coreos:
       Type=oneshot
       RemainAfterExit=yes
       ExecStartPre=-${PROJECT_DIR}/setup/varlibdocker.sh
-      ExecStart=/usr/bin/mountpoint -q /home/core/vld
+      ExecStart=/usr/bin/mountpoint -q /home/core/fs
   # - name: var-lib-docker.mount
   #   command: start
   #   content: |
@@ -53,7 +53,7 @@ coreos:
   #     Before=btrfs.service
   #     [Mount]
   #     #mounting /dev/varlibdocker does not work!!!!
-  #     What=/home/core/vld
+  #     What=/home/core/fs
   #     Where=/var/lib/docker
   #     Options=bind
   - name: docker.service

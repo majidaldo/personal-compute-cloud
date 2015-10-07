@@ -75,9 +75,9 @@ sudo mkfs.btrfs  -L vld -m single $(cat $devlist_file)
 
 
 #the scan is important! as per  btrfs wiki
-mkdir /home/core/vld
+mkdir /home/core/fs
 sudo btrfs device scan
-sudo mount -v /dev/varlibdocker /home/core/vld
+sudo mount -v /dev/varlibdocker /home/core/fs
 
 echo printing mounts just so you can see the mount  didnt work
 mount
@@ -85,18 +85,18 @@ mount
 #going through the following crap bc sometimes it doesnt mount
 #even if i had previously formatted and mounted successfully
 
-if mountpoint -q /home/core/vld
+if mountpoint -q /home/core/fs
 then
     echo mounted
 else
     echo crap! not mounted. some problem causd by idk what.
     echo making nonsense mounts to try to fix
-    sudo mount -v -o ro,recovery /dev/varlibdocker /home/core/vld
-    sudo umount -v /home/core/vld
+    sudo mount -v -o ro,recovery /dev/varlibdocker /home/core/fs
+    sudo umount -v /home/core/fs
     assign_dev
-    sudo mount -v /dev/varlibdocker /home/core/vld
+    sudo mount -v /dev/varlibdocker /home/core/fs
     #chk again
-    if mountpoint -q /home/core/vld
+    if mountpoint -q /home/core/fs
     then
     echo idk that worked
     else
@@ -106,7 +106,7 @@ else
         sudo btrfs check --repair $afs
     done
     assign_dev
-    sudo mount -v /dev/varlibdocker /home/core/vld
+    sudo mount -v /dev/varlibdocker /home/core/fs
     fi
 fi
 
