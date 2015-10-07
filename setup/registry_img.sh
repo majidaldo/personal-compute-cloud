@@ -1,5 +1,5 @@
 #!/bin/sh
-
+set -e
 
 source ../common.src
 drid=`$ENVCMD REGISTRYIMG_DIR` #docker registry img dir
@@ -9,7 +9,7 @@ if [ ! -f ${drid}/registry.tar ];
 then
     mkdir -p $drid
     cd `$ENVCMD PROJECT_DIR`/docker
-    docker build -t docker-registry     docker-registry 
-    docker save -o ${drid}/registry.tar docker-registry
+    docker pull                         distribution/registry
+    docker save -o ${drid}/registry.tar distribution/registry
 fi
 

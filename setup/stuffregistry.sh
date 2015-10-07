@@ -13,7 +13,7 @@ docker run \
         -d \
         -v ${regdatadir}:/var/lib/registry \
         -p 5000:5000 \
-        docker-registry
+        distribution/registry
 
 
 export REGISTRY_HOST=localhost:5000
