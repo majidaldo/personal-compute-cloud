@@ -46,6 +46,10 @@ So all you have to do is add your Dockerfiles in the [`docker/`](docker/) folder
 
 Run [`setup/setup.sh`](setup/setup.sh) from within its directory.
 
+*Provider Inventory*
+
+Also, in [`ansible/inventory/ansible`](ansible/inventory/ansible) remove the Ansible dynamic inventory scripts for unused providers. But don't remove [vagrant.sh`](ansible/inventory/ansible/vagrant.sh).
+
 
 ## Usage
 
