@@ -295,7 +295,19 @@ coreos:
         ExecStop=/usr/bin/sh -c 'eval $(/opt/bin/weave env) && \
         /usr/bin/docker stop registry'
 
-       
+    - name: updateregistryimg.service 
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=update registry image in bootstrap dir
+        Requires=registry.service
+        After=   registry.service
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=${PROJECT_DIR}/setup/registry_img.sh
+        
         
     - name: fileshare.service 
       command: start
