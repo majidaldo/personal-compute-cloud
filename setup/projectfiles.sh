@@ -25,6 +25,3 @@ then
     ./vagrant provision --provision-with \
 	      "stuff docker registry"
 fi
-
-./vagrant destroy -f
-

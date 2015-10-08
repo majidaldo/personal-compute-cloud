@@ -1,4 +1,5 @@
 #!/bin/sh
+cd $(dirname $0)
 
 
 
@@ -7,3 +8,4 @@
 
 #make registry and maybe /var/lib/docker
 ./projectfiles.sh
+vagrant destroy -f
