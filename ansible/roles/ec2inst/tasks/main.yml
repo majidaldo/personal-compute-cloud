@@ -4,7 +4,10 @@
 
 #http://docs.ansible.com/ansible/ec2_module.html
 
-
+- set_fact:
+    _coreos_json: "{{ lookup('pipe',_coreos_curl)  }}" #no from_json !
+- set_fact:
+    latest_image: "{{ _coreos_json[ec2_vars.defaults.region][ec2_vars.defaults.virt]  }}"
 
 - name: provision ec2 instances
   ec2:

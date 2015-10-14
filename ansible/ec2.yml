@@ -9,9 +9,8 @@
     - name: get ec2_vars
       include_vars: '{{playbook_dir}}/roles/ec2inst/vars/main.yml'
     - set_fact:
-        cnt:  "{{ count  | default(ec2_vars.defaults.count) }}"
+        cnt:  "{{ count | default(ec2_vars.defaults.count) }}"
         rgn: "{{ region | default(ec2_vars.defaults.region)}}"
-        img:  "{{ image  | default(ec2_vars[ec2_vars.defaults.region].image)}}"
 
 #check that you have this very new feature
 #https://github.com/ansible/ansible-modules-core/pull/1978
@@ -43,7 +42,7 @@
       instance_type: "{{ ec2_vars.type[typ] | default(ec2_vars.defaults.type) }}"
       count:         "{{cnt}}"
       region:        "{{rgn}}"
-      image:         "{{img}}"
+      image:         "{{latest_image}}"
       when: "stt!='stopped'"
 
 

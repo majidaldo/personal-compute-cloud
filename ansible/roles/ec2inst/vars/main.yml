@@ -12,8 +12,9 @@ ec2_vars:
     count: 1
     #img given by region
     type: compute
+    channel: alpha
+    virt: hvm
     
-
   #depends on region
   us-east-1:
     image: ami-6375d808
@@ -29,3 +30,6 @@ ec2_vars:
     compute: c4.2xlarge
 #2x means 8 cpus
 
+_coreos_curl: "{{'curl https://coreos.com/dist/aws/aws-'+ec2_vars.defaults.channel+'.json'}}"
+# _coreos_json: "{{ lookup('pipe',_coreos_curl)  }}" #no from_json !
+# latest_image: "{{ _coreos_json[ec2_vars.defaults.region][ec2_vars.defaults.virt]  }}"
