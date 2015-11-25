@@ -1,3 +1,5 @@
+use the 'btrfs' branch for now https://github.com/majidaldo/personal-compute-cloud/tree/btrfs
+
 # CoreOS-based personal compute cloud
 personal compute cloud using [Ansible](http://www.ansible.com), [CoreOS](http://www.coreos.com),  [Docker](http://www.docker.com), [Vagrant](http://www.vagrantup.com), [Virtualbox](https://www.virtualbox.org), and [weave](http://weave.works).
 
