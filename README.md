@@ -88,7 +88,7 @@ After setup you can `ssh ec2hostname` or `ssh vagrant` because hosts are automat
 - Use `cuda` [docker image](https://github.com/majidaldo/coreos-nvidia) to build your CUDA application.
 - Clean out your old hosts by removing entries in the directory `~/.ssh/config.d/` and the `~/.ssh/config` file (just delete them if you're feeling brave. todo: automate this)
 - Use `ansible/save-aprovider.sh` to save the state of its machines. Resume by running the corresponding provisioning and setup programs.
-
+- Maintenance: If you keep building images, Docker images will accumulate after a while in the docker registry data directory. When that happens just delete the folders in `~/project/fs/registry/docker/registry`
 
 ## Notes
 - No claims are made as to the security (or lack there of) of this setup. Convenience (in the form of simplicity and automation) takes priority over security measures.
