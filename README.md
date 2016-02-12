@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/20392/majidaldo/personal-compute-cloud.svg)](https://zenodo.org/badge/latestdoi/20392/majidaldo/personal-compute-cloud)
+
 use the 'btrfs' branch for now https://github.com/majidaldo/personal-compute-cloud/tree/btrfs
 
 # CoreOS-based personal compute cloud
