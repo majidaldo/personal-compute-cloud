@@ -1,8 +1,10 @@
-[![DOI](https://zenodo.org/badge/20392/majidaldo/personal-compute-cloud.svg)](https://zenodo.org/badge/latestdoi/20392/majidaldo/personal-compute-cloud)
+this is the btrfs branch with the following change/feature:
+- the registry just can't use the winnfs share (win problem?)! so now it doesn't write to the local files. However, as a work around, the registry uses a mounted filesystem created on your shared file folder. The downside is the you have to set some size by setting `VARLIBDOCKER_GB` (GB in integers) in [config/project.env](config/project.env). it turns out that any program that needs advanced access to the filesystem, cannot use the nfs share. so i'm thinking of making this change as part of the master branch.
 
-use the 'btrfs' branch for now https://github.com/majidaldo/personal-compute-cloud/tree/btrfs
 
 # CoreOS-based personal compute cloud
+formal writeup in appendix A of [thesis](https://github.com/majidaldo/tsad-docs/raw/a172e2f9f50f01c0c4cdb6c68d3d315f874fb78a/thesis.pdf)
+
 personal compute cloud using [Ansible](http://www.ansible.com), [CoreOS](http://www.coreos.com),  [Docker](http://www.docker.com), [Vagrant](http://www.vagrantup.com), [Virtualbox](https://www.virtualbox.org), and [weave](http://weave.works).
 
 `git clone --recursive https://github.com/majidaldo/personal-compute-cloud.git`
@@ -11,7 +13,11 @@ personal compute cloud using [Ansible](http://www.ansible.com), [CoreOS](http://
 because scientific computing [(some explanation)](http://msdresearch.blogspot.com/2015/08/personal-compute-cloud-infrastructure.html). Briefly, the goal is cater to a workflow that starts with local development, and seamlesslessly brings more compute power on demand.
 
 ## What it Does
-Two types of machines are started to support the scientific computing workflow (using Docker). There is a local virtualized controller machine (called init) prividing coordination and services; and compute machines that are more ephemeral. A local compute machine is brought up for 'development'. But when a remote compute machine is acquired, it would use the same (ansible) setup script. Therefore, the local compute machine is really a stand-in for a remote machine. The controller and compute machines together provide:
+Two types of machines are started to support the scientific computing workflow (using Docker). There is a local virtualized controller machine (called init) prividing coordination and services; and compute machines that are more ephemeral. A local compute machine is brought up for 'development'. But when a remote compute machine is acquired, it would use the same (ansible) setup script. Therefore, the local compute machine is really a stand-in for a remote machine.
+
+![architecture](arch.png)
+
+The controller and compute machines together provide:
 
 ## Features
 - global network addressing of docker containers across clouds (thanks to weave)
@@ -45,6 +51,10 @@ So all you have to do is add your Dockerfiles in the [`docker/`](docker/) folder
 *Initialization*
 
 Run [`setup/setup.sh`](setup/setup.sh) from within its directory.
+
+*Provider Inventory*
+
+Also, in [`ansible/inventory/ansible`](ansible/inventory/ansible) remove the Ansible dynamic inventory scripts for unused providers. But don't remove [vagrant.sh`](ansible/inventory/ansible/vagrant.sh).
 
 
 ## Usage
